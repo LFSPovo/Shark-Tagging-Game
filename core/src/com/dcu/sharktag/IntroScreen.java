@@ -57,9 +57,8 @@ public class IntroScreen extends ScreenAdapter{
 	private void draw(){
 		batch.setProjectionMatrix(camera.projection);
 		batch.setTransformMatrix(camera.view);
-		
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+	
+		clearScreen();
 		
 		batch.begin();
 		batch.setColor(1, 1, 1, MathUtils.clamp(fadein, 0, 1));
@@ -68,7 +67,17 @@ public class IntroScreen extends ScreenAdapter{
 		batch.end();
 	}
 	
+	private void clearScreen(){
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+	}
+	
 	private void update(float delta){
 		fadein += delta / 2;
+		
+		if(fadein > 1.5){
+			clearScreen();
+			game.setScreen(new LoginScreen(game));
+		}
 	}
 }
