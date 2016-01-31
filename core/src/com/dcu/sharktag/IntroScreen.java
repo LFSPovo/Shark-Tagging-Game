@@ -1,6 +1,7 @@
 package com.dcu.sharktag;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
@@ -75,7 +76,9 @@ public class IntroScreen extends ScreenAdapter{
 	private void update(float delta){
 		fadein += delta / 2;
 		
-		if(fadein > 1.5){
+		if(fadein > 1.5 ||
+			Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY) ||
+			Gdx.input.isTouched()){
 			clearScreen();
 			game.setScreen(new LoginScreen(game));
 		}
