@@ -13,7 +13,7 @@ public class SharkTag extends Game {
 	
 	@Override
 	public void create () {
-		uiSkin = new Skin(Gdx.files.internal("../android/assets/ui/uiskin.json"));
+		uiSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 		setScreen(new IntroScreen(this));
 	}
 	

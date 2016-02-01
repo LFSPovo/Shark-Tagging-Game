@@ -36,7 +36,7 @@ public class IntroScreen extends ScreenAdapter{
 		
 		viewport = new FitViewport(game.WORLD_WIDTH, game.WORLD_HEIGHT, camera);
 		
-		logo = new Texture(Gdx.files.internal("./libgdx-logo.png"));
+		logo = new Texture(Gdx.files.internal("libgdx-logo.png"));
 	}
 	
 	@Override
