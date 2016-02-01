@@ -47,7 +47,11 @@ public class IntroScreen extends ScreenAdapter{
 	
 	@Override
 	public void resize(int width, int height){
-		viewport.update(width, height);
+		Viewport vp = stage.getViewport();
+		// Set screen size
+		vp.update(width, height);
+		// Use updated viewport
+		stage.setViewport(vp);
 	}
 	
 	@Override
