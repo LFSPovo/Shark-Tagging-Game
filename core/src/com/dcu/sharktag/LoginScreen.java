@@ -46,6 +46,11 @@ public class LoginScreen extends ScreenAdapter{
 	}
 	
 	@Override
+	public void resize(int width, int height){
+		stage.getViewport().update(width, height);
+	}
+	
+	@Override
 	public void dispose(){
 		stage.dispose();
 	}
