@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class LoginScreen extends ScreenAdapter{
 	
@@ -47,7 +48,11 @@ public class LoginScreen extends ScreenAdapter{
 	
 	@Override
 	public void resize(int width, int height){
-		stage.getViewport().update(width, height);
+		Viewport vp = stage.getViewport();
+		// Set screen size
+		vp.update(width, height);
+		// Use updated viewport
+		stage.setViewport(vp);
 	}
 	
 	@Override
