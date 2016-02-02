@@ -5,13 +5,14 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class MainMenu extends ScreenAdapter{
+public class CreditsScreen extends ScreenAdapter{
 
 	private SharkTag game;
 	private Stage stage;
@@ -19,11 +20,11 @@ public class MainMenu extends ScreenAdapter{
 	private float uiOriginX = 0;
 	private float uiOriginY = 0;
 	
-	public MainMenu(SharkTag game){
+	public CreditsScreen(SharkTag game){
 		this.game = game;
 		
 		uiOriginX = game.WORLD_WIDTH / 2;
-		uiOriginY = 4 * game.WORLD_HEIGHT / 5;
+		uiOriginY = 4.5f * game.WORLD_HEIGHT / 5;
 	}
 	
 	@Override
@@ -56,36 +57,20 @@ public class MainMenu extends ScreenAdapter{
 	}
 	
 	private void buildGUI(){
-		TextButton playButton = new TextButton("Play", game.getUISkin());
-		playButton.setPosition(uiOriginX, uiOriginY, Align.center);
-		stage.addActor(playButton);
+		Label programmingHeading = new Label("Programming", game.getUISkin());
+		programmingHeading.setPosition(uiOriginX, uiOriginY, Align.center);
+		stage.addActor(programmingHeading);
 		
-		TextButton optionsButton = new TextButton("Options", game.getUISkin());
-		optionsButton.setPosition(uiOriginX, uiOriginY - 50, Align.center);
-		stage.addActor(optionsButton);
+		TextButton backButton = new TextButton("Back", game.getUISkin());
+		backButton.setPosition(uiOriginX, 50, Align.center);
+		stage.addActor(backButton);
 		
-		TextButton creditsButton = new TextButton("Credits", game.getUISkin());
-		creditsButton.setPosition(uiOriginX, uiOriginY - 100, Align.center);
-		stage.addActor(creditsButton);
-		
-		TextButton exitButton = new TextButton("Exit", game.getUISkin());
-		exitButton.setPosition(uiOriginX, uiOriginY - 150, Align.center);
-		stage.addActor(exitButton);
-		
-		creditsButton.addListener(new ActorGestureListener(){
+		backButton.addListener(new ActorGestureListener(){
 			@Override
 			public void tap(InputEvent event, float x, float y, int count, int button){
 				super.tap(event, x, y, count, button);
-				game.setScreen(new CreditsScreen(game));
+				game.setScreen(new MainMenu(game));
 				dispose();
-			}
-		});
-		
-		exitButton.addListener(new ActorGestureListener(){
-			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
-				Gdx.app.exit();
 			}
 		});
 	}
