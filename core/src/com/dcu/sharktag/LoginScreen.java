@@ -91,12 +91,12 @@ public class LoginScreen extends ScreenAdapter{
 				super.tap(event, x, y, count, button);
 				
 				if(loginUser(loginName.getText(), loginPassword.getText())){
-					//TODO move to main menu
+					game.setScreen(new MainMenu(game));
+					dispose();
 				}
 				else{
 					//TODO error message
 				}
-				dispose();
 			}
 		});
 		
