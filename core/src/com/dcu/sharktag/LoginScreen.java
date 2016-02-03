@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -61,6 +62,8 @@ public class LoginScreen extends ScreenAdapter{
 	}
 	
 	private void buildGUI(){
+//		TextField.TextFieldStyle textFieldStyle = game.getUISkin().get(TextField.TextFieldStyle.class);
+//		textFieldStyle.font.getData().scale(0.1f);
 		Label usernameLabel = new Label("Username", game.getUISkin());
 		usernameLabel.setPosition(uiOriginX, uiOriginY + 30, Align.center);
 		stage.addActor(usernameLabel);

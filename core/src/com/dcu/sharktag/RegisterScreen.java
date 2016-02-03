@@ -21,7 +21,6 @@ public class RegisterScreen extends ScreenAdapter{
 	
 	private TextField username;
 	private TextField email;
-//	private TextField email2;	//repeat
 	private TextField password;
 	private TextField password2;//repeat
 	
@@ -83,14 +82,6 @@ public class RegisterScreen extends ScreenAdapter{
 		email.setPosition(uiOriginX, uiOriginY - 80, Align.center);
 		stage.addActor(email);
 		
-		//REPEAT EMAIL
-//		Label email2Label = new Label("Repeat Email", game.getUISkin());
-//		email2Label.setPosition(uiOriginX, uiOriginY - 130, Align.center);
-//		stage.addActor(email2Label);
-//		email2 = new TextField("", game.getUISkin());
-//		email2.setPosition(uiOriginX, uiOriginY - 160, Align.center);
-//		stage.addActor(email2);
-		
 		//PASSWORD
 		Label passwordLabel = new Label("Password", game.getUISkin());
 		passwordLabel.setPosition(uiOriginX, uiOriginY - 130, Align.center);
@@ -148,19 +139,7 @@ public class RegisterScreen extends ScreenAdapter{
 		else if(!email.getText().contains("@")){
 			email.setColor(1, 0, 0, 1);
 		}
-		
-		//Check if emails match
-//		if(email2.getText().equals("")){
-//			email2.setColor(1, 1, 1, 1);
-//		}
-//		else if(!email.getText().equals(email2.getText())){
-//			email2.setColor(1, 0, 0, 1);
-//		}
-//		else{
-//			email2.setColor(0, 1, 0, 1);
-//		}
-		
-		//Check if passwords match
+
 		if(password2.getText().equals("")){
 			password2.setColor(1, 1, 1, 1);
 		}
