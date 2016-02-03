@@ -1,14 +1,13 @@
 package com.dcu.sharktag;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -105,18 +104,25 @@ public class MainGame extends ScreenAdapter{
 	}
 	
 	private void updateTagging(){
-		
 		if(Gdx.input.justTouched()){
+			// Convert screen points to virtual screen points
+			Vector2 touchPoint = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+			touchPoint = stage.getViewport().unproject(touchPoint);
+			
 			//TODO make better tagging mechanism
-			tagStartX = Gdx.input.getX();
-			tagStartY = game.WORLD_HEIGHT - Gdx.input.getY();
+			tagStartX = touchPoint.x;
+			tagStartY = touchPoint.y;
 			tagEndX = tagStartX;
 			tagEndY = tagStartY;
 		}
 		
 		if(Gdx.input.isTouched()){
-			tagEndX = Gdx.input.getX();
-			tagEndY = game.WORLD_HEIGHT - Gdx.input.getY();
+			// Convert screen points to virtual screen points
+			Vector2 touchPoint = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+			touchPoint = stage.getViewport().unproject(touchPoint);
+			
+			tagEndX = touchPoint.x;
+			tagEndY = touchPoint.y;
 		}
 	}
 }

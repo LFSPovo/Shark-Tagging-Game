@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class SharkTag extends Game {
 	
-	public final float WORLD_WIDTH = 800;
-	public final float WORLD_HEIGHT = 600;
+	public final float WORLD_WIDTH = 480;
+	public final float WORLD_HEIGHT = 848;
 	
 	private Skin uiSkin;
 	
