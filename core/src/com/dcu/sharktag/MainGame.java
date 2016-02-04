@@ -16,15 +16,17 @@ public class MainGame extends ScreenAdapter{
 	
 	private SharkTag game;
 	private Stage stage;
-
-	private Viewport viewport;
-	private Camera camera;
 	
 	private ShapeRenderer shapeRenderer;
 	private SpriteBatch batch;
 	private Texture image;
 	
 //	private mouse/
+	private float touchX = 0;
+	private float touchY = 0;
+	private float touchStartX = 0;
+	private float touchStartY = 0;
+	
 	private float tagStartX = 0;
 	private float tagStartY = 0;
 	private float tagEndX = 0;
@@ -111,10 +113,10 @@ public class MainGame extends ScreenAdapter{
 			touchPoint = stage.getViewport().unproject(touchPoint);
 			
 			//TODO make better tagging mechanism
-			tagStartX = touchPoint.x;
-			tagStartY = touchPoint.y;
-			tagEndX = tagStartX;
-			tagEndY = tagStartY;
+			touchStartX = touchPoint.x;
+			touchStartY = touchPoint.y;
+			touchX = tagStartX;
+			touchY = tagStartY;
 		}
 		
 		if(Gdx.input.isTouched()){
@@ -122,8 +124,28 @@ public class MainGame extends ScreenAdapter{
 			Vector2 touchPoint = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 			touchPoint = stage.getViewport().unproject(touchPoint);
 			
-			tagEndX = touchPoint.x;
-			tagEndY = touchPoint.y;
+			touchX = touchPoint.x;
+			touchY = touchPoint.y;
+		}
+		
+		if(Math.abs(touchStartX - touchX) > 50){
+			tagStartX = touchStartX;
+			tagEndX = touchX;
+		}
+		else{
+			float axisX = (touchX - touchStartX) / Math.abs(touchX - touchStartX);
+			tagStartX = touchStartX;
+			tagEndX = touchStartX + 50 * axisX;
+		}
+		
+		if(Math.abs(touchStartY - touchY) > 50){
+			tagStartY = touchStartY;
+			tagEndY = touchY;
+		}
+		else{
+			float axisY = (touchY - touchStartY) / Math.abs(touchY - touchStartY);
+			tagStartY = touchStartY;
+			tagEndY = touchStartY + 50 * axisY;
 		}
 	}
 }
