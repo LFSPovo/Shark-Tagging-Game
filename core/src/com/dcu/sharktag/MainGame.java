@@ -77,10 +77,11 @@ public class MainGame extends ScreenAdapter{
 	private void draw(){
 		batch.setProjectionMatrix(stage.getCamera().projection);
 		batch.setTransformMatrix(stage.getCamera().view);
-		
 		batch.begin();
+		float ratio = image.getHeight() / 480;
+		float w = image.getWidth() / ratio;
 		if(image != null){
-			batch.draw(image, 0, 0);
+			batch.draw(image, 0, 0, w, 480);
 		}
 		batch.end();
 	}
