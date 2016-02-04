@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -21,16 +22,11 @@ public class MainGame extends ScreenAdapter{
 	private SpriteBatch batch;
 	private Texture image;
 	
-//	private mouse/
-	private float touchX = 0;
-	private float touchY = 0;
-	private float touchStartX = 0;
-	private float touchStartY = 0;
-	
-	private float tagStartX = 0;
-	private float tagStartY = 0;
-	private float tagEndX = 0;
-	private float tagEndY = 0;
+	private Vector2 touchStart = new Vector2(0, 0);
+	private Vector2 touch = new Vector2(0, 0);
+	private Vector2 tagStart = new Vector2(0, 0);
+	private Vector2 tagEnd = new Vector2(0, 0);
+	private int minTagSize = 50;	// For both horizontal and vertical sides
 	
 	public MainGame(SharkTag game){
 		this.game = game;
@@ -94,7 +90,8 @@ public class MainGame extends ScreenAdapter{
 		
 		shapeRenderer.setColor(1, 0, 0, 1);
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-		shapeRenderer.rect(tagStartX, tagStartY, tagEndX - tagStartX, tagEndY - tagStartY);
+		shapeRenderer.rect(tagStart.x, tagStart.y,
+				tagEnd.x - tagStart.x, tagEnd.y - tagStart.y);
 		shapeRenderer.end();
 	}
 	
@@ -112,11 +109,11 @@ public class MainGame extends ScreenAdapter{
 			Vector2 touchPoint = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 			touchPoint = stage.getViewport().unproject(touchPoint);
 			
-			//TODO make better tagging mechanism
-			touchStartX = touchPoint.x;
-			touchStartY = touchPoint.y;
-			touchX = tagStartX;
-			touchY = tagStartY;
+			// Set new touch coordinates
+			touchStart.x = touchPoint.x;
+			touchStart.y = touchPoint.y;
+			touch.x = tagStart.x;
+			touch.y = tagStart.y;
 		}
 		
 		if(Gdx.input.isTouched()){
@@ -124,28 +121,32 @@ public class MainGame extends ScreenAdapter{
 			Vector2 touchPoint = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 			touchPoint = stage.getViewport().unproject(touchPoint);
 			
-			touchX = touchPoint.x;
-			touchY = touchPoint.y;
+			touch.x = touchPoint.x;
+			touch.y = touchPoint.y;
 		}
 		
-		if(Math.abs(touchStartX - touchX) > 50){
-			tagStartX = touchStartX;
-			tagEndX = touchX;
+		if(Math.abs(touchStart.x - touch.x) > minTagSize){
+			tagStart.x = touchStart.x;
+			tagEnd.x = touch.x;
 		}
 		else{
-			float axisX = (touchX - touchStartX) / Math.abs(touchX - touchStartX);
-			tagStartX = touchStartX;
-			tagEndX = touchStartX + 50 * axisX;
+			// Calculates a multiplier, either -1 or 1, based on
+			// where the mouse is relative to starting point
+			float axisX = (touch.x - touchStart.x) /
+					Math.abs(touch.x - touchStart.x);
+			tagStart.x = touchStart.x;
+			tagEnd.x = touchStart.x + minTagSize * axisX;
 		}
 		
-		if(Math.abs(touchStartY - touchY) > 50){
-			tagStartY = touchStartY;
-			tagEndY = touchY;
+		if(Math.abs(touchStart.y - touch.y) > minTagSize){
+			tagStart.y = touchStart.y;
+			tagEnd.y = touch.y;
 		}
 		else{
-			float axisY = (touchY - touchStartY) / Math.abs(touchY - touchStartY);
-			tagStartY = touchStartY;
-			tagEndY = touchStartY + 50 * axisY;
+			float axisY = (touch.y - touchStart.y) /
+					Math.abs(touch.y - touchStart.y);
+			tagStart.y = touchStart.y;
+			tagEnd.y = touchStart.y + minTagSize * axisY;
 		}
 	}
 }
