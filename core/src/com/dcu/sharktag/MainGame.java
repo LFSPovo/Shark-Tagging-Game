@@ -20,7 +20,10 @@ public class MainGame extends ScreenAdapter{
 	
 	private ShapeRenderer shapeRenderer;
 	private SpriteBatch batch;
+	
 	private Texture image;
+	private Vector2 imageSize = new Vector2(0, 0);	// New size for the image if
+													// it doesn't fit the screen
 	
 	private Vector2 touchStart = new Vector2(0, 0);
 	private Vector2 touch = new Vector2(0, 0);
@@ -36,6 +39,8 @@ public class MainGame extends ScreenAdapter{
 	public void show(){
 		stage = new Stage(new FitViewport(game.WORLD_WIDTH, game.WORLD_HEIGHT));
 		Gdx.input.setInputProcessor(stage);
+		
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		
 		shapeRenderer = new ShapeRenderer();
 		batch = new SpriteBatch();
@@ -76,10 +81,12 @@ public class MainGame extends ScreenAdapter{
 		batch.setProjectionMatrix(stage.getCamera().projection);
 		batch.setTransformMatrix(stage.getCamera().view);
 		batch.begin();
-		float ratio = image.getHeight() / 480;
-		float w = image.getWidth() / ratio;
+				
 		if(image != null){
-			batch.draw(image, 0, 0, w, 480);
+			batch.draw(image,
+					(game.WORLD_WIDTH - imageSize.x) / 2,	//if it's smaller than the screen,
+					(game.WORLD_HEIGHT - imageSize.y) / 2,	//center it
+					imageSize.x, imageSize.y);
 		}
 		batch.end();
 	}
@@ -98,8 +105,32 @@ public class MainGame extends ScreenAdapter{
 	private Texture fetchImage(){
 		//TODO fetch image from the server
 		
-		//temporary
-		Texture t = new Texture(Gdx.files.internal("shark-test.jpg"));
+		// Temporary image loading
+		Texture t = new Texture(Gdx.files.internal("resolution-test1.jpg"));
+		
+		// Correct image height relative to image width to fit the
+		// image on the screen
+		if(t.getWidth() > game.WORLD_WIDTH){
+			float ratio = 854f / t.getWidth();
+			imageSize.y = (int)(t.getHeight() * ratio);
+		}
+		else{
+			imageSize.y = t.getHeight();
+		}
+		
+		// If the image was in any other aspect ratio than 16:9,
+		// it still needs correction of the width relative
+		// to its height
+		if(imageSize.y > game.WORLD_HEIGHT){
+			float ratio = 480f / imageSize.y;
+			imageSize.x = (int)(imageSize.y * ratio);
+		}
+		else{
+			// There is a possibility that the image is genuinely smaller
+			// than the screen resolution
+			imageSize.x = Math.min(t.getWidth(), game.WORLD_WIDTH);
+		}
+		
 		return t;
 	}
 	
@@ -131,7 +162,7 @@ public class MainGame extends ScreenAdapter{
 		}
 		else{
 			// Calculates a multiplier, either -1 or 1, based on
-			// where the mouse is relative to starting point
+			// where the mouse is relative to the starting point of touch
 			float axisX = (touch.x - touchStart.x) /
 					Math.abs(touch.x - touchStart.x);
 			tagStart.x = touchStart.x;
