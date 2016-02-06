@@ -29,7 +29,12 @@ public class MainGame extends ScreenAdapter{
 	private Vector2 touch = new Vector2(0, 0);
 	private Vector2 tagStart = new Vector2(0, 0);
 	private Vector2 tagEnd = new Vector2(0, 0);
-	private int minTagSize = 50;	// For both horizontal and vertical sides
+	private int minTagSize = 100;	// For both horizontal and vertical sides
+	private int tagGrabArea = 30;	// How close the user needs to touch near
+									// the handle to grab it
+	
+	private boolean dragStart = false;
+	private boolean dragEnd = false;
 	
 	public MainGame(SharkTag game){
 		this.game = game;
@@ -99,6 +104,15 @@ public class MainGame extends ScreenAdapter{
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 		shapeRenderer.rect(tagStart.x, tagStart.y,
 				tagEnd.x - tagStart.x, tagEnd.y - tagStart.y);
+		
+		shapeRenderer.setColor(0, 0, 1, 1);	// Debug
+		shapeRenderer.circle(tagStart.x, tagStart.y, 5);
+		
+		shapeRenderer.setColor(0, 1, 0, 1);
+		shapeRenderer.circle(tagEnd.x, tagEnd.y, 5);
+		
+		shapeRenderer.setColor(1, 0, 1, 1);
+		shapeRenderer.rect(touchStart.x - 5, touchStart.y - 5, 10, 10);
 		shapeRenderer.end();
 	}
 	
@@ -136,15 +150,32 @@ public class MainGame extends ScreenAdapter{
 	
 	private void updateTagging(){
 		if(Gdx.input.justTouched()){
+			dragStart = false;
+			dragEnd = false;
 			// Convert screen points to virtual screen points
 			Vector2 touchPoint = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 			touchPoint = stage.getViewport().unproject(touchPoint);
 			
-			// Set new touch coordinates
-			touchStart.x = touchPoint.x;
-			touchStart.y = touchPoint.y;
-			touch.x = tagStart.x;
-			touch.y = tagStart.y;
+			if(distance(touchPoint, tagStart) <= tagGrabArea){
+//				touch.x = tagStart.x;
+//				touch.y = tagStart.y;
+				touchStart = tagEnd;
+				dragStart = true;
+			}
+			else if(distance(touchPoint, tagEnd) <= tagGrabArea){
+//				touch.x = tagEnd.x;
+//				touch.y = tagEnd.y;
+				touchStart = tagStart;
+				dragEnd = true;
+			}
+			else{
+//				touch.x = tagEnd.x;
+//				touch.y = tagEnd.y;
+				
+				// Set new touch coordinates
+				touchStart.x = touchPoint.x;
+				touchStart.y = touchPoint.y;
+			}
 		}
 		
 		if(Gdx.input.isTouched()){
@@ -157,27 +188,68 @@ public class MainGame extends ScreenAdapter{
 		}
 		
 		if(Math.abs(touchStart.x - touch.x) > minTagSize){
-			tagStart.x = touchStart.x;
-			tagEnd.x = touch.x;
+			if(dragStart){
+				tagStart.x = touch.x;
+			}
+			else if(dragEnd){
+				tagEnd.x = touch.x;
+			}
+			else{
+				tagStart.x = touchStart.x;
+				tagEnd.x = touch.x;
+			}
 		}
 		else{
 			// Calculates a multiplier, either -1 or 1, based on
 			// where the mouse is relative to the starting point of touch
-			float axisX = (touch.x - touchStart.x) /
-					Math.abs(touch.x - touchStart.x);
-			tagStart.x = touchStart.x;
-			tagEnd.x = touchStart.x + minTagSize * axisX;
+			int axisX = (int)((touch.x - touchStart.x) /
+					Math.abs(touch.x - touchStart.x));
+			if(axisX == 0){
+				axisX = 1;
+			}
+			
+			if(dragStart){
+				tagEnd.x = touchStart.x;
+				tagStart.x = touchStart.x + minTagSize * axisX;
+			}
+			else{
+				tagStart.x = touchStart.x;
+				tagEnd.x = touchStart.x + minTagSize * axisX;
+			}
 		}
 		
 		if(Math.abs(touchStart.y - touch.y) > minTagSize){
-			tagStart.y = touchStart.y;
-			tagEnd.y = touch.y;
+			if(dragStart){
+				tagStart.y = touch.y;
+			}
+			else if(dragEnd){
+				tagEnd.y = touch.y;
+			}
+			else{
+				tagStart.y = touchStart.y;
+				tagEnd.y = touch.y;
+			}
 		}
 		else{
-			float axisY = (touch.y - touchStart.y) /
-					Math.abs(touch.y - touchStart.y);
-			tagStart.y = touchStart.y;
-			tagEnd.y = touchStart.y + minTagSize * axisY;
+			int axisY = (int)((touch.y - touchStart.y) /
+					Math.abs(touch.y - touchStart.y));
+			if(axisY == 0){
+				axisY = 1;
+			}
+			
+			if(dragStart){
+				tagEnd.y = touchStart.y;
+				tagStart.y = touchStart.y + minTagSize * axisY;
+			}
+			else{
+				tagStart.y = touchStart.y;
+				tagEnd.y = touchStart.y + minTagSize * axisY;
+			}
 		}
+	}
+	
+	private float distance(Vector2 point1, Vector2 point2){
+		//sqrt((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
+		return (float)Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
 	}
 }
