@@ -31,6 +31,8 @@ public class MainMenu extends ScreenAdapter{
 		stage = new Stage(new FitViewport(game.WORLD_WIDTH, game.WORLD_HEIGHT));
 		Gdx.input.setInputProcessor(stage);
 		
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+		
 		buildGUI();
 	}
 	

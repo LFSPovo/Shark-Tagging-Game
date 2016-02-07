@@ -9,7 +9,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -51,6 +54,8 @@ public class MainGame extends ScreenAdapter{
 		batch = new SpriteBatch();
 		
 		image = fetchImage();
+		
+		buildGUI();
 	}
 	
 	@Override
@@ -75,6 +80,9 @@ public class MainGame extends ScreenAdapter{
 	
 	@Override
 	public void dispose(){
+		if(image != null){
+			image.dispose();
+		}
 		stage.dispose();
 	}
 	
@@ -157,21 +165,14 @@ public class MainGame extends ScreenAdapter{
 			touchPoint = stage.getViewport().unproject(touchPoint);
 			
 			if(distance(touchPoint, tagStart) <= tagGrabArea){
-//				touch.x = tagStart.x;
-//				touch.y = tagStart.y;
 				touchStart = tagEnd;
 				dragStart = true;
 			}
 			else if(distance(touchPoint, tagEnd) <= tagGrabArea){
-//				touch.x = tagEnd.x;
-//				touch.y = tagEnd.y;
 				touchStart = tagStart;
 				dragEnd = true;
 			}
 			else{
-//				touch.x = tagEnd.x;
-//				touch.y = tagEnd.y;
-				
 				// Set new touch coordinates
 				touchStart.x = touchPoint.x;
 				touchStart.y = touchPoint.y;
@@ -267,5 +268,24 @@ public class MainGame extends ScreenAdapter{
 		if(point.x > game.WORLD_WIDTH) point.x = game.WORLD_WIDTH;
 		if(point.y < 0) point.y = 0;
 		if(point.y > game.WORLD_HEIGHT) point.y = game.WORLD_HEIGHT;
+	}
+	
+	private void buildGUI(){
+		TextButton backButton = new TextButton("Menu", game.getUISkin());
+		backButton.setPosition(10, 10);
+		stage.addActor(backButton);
+		
+		TextButton nextButton = new TextButton("Next", game.getUISkin());
+		nextButton.setPosition(game.WORLD_WIDTH - nextButton.getWidth() - 10, 10);
+		stage.addActor(nextButton);
+		
+		backButton.addListener(new ActorGestureListener(){
+			@Override
+			public void tap(InputEvent event, float x, float y, int count, int button){
+				super.tap(event, x, y, count, button);
+				game.setScreen(new MainMenu(game));
+				dispose();
+			}
+		});
 	}
 }
