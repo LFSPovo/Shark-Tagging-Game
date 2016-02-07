@@ -64,12 +64,16 @@ public class MainMenu extends ScreenAdapter{
 		optionsButton.setPosition(uiOriginX, uiOriginY - 50, Align.center);
 		stage.addActor(optionsButton);
 		
+		TextButton highscoreButton = new TextButton("Highscores", game.getUISkin());
+		highscoreButton.setPosition(uiOriginX, uiOriginY - 100, Align.center);
+		stage.addActor(highscoreButton);
+		
 		TextButton creditsButton = new TextButton("Credits", game.getUISkin());
-		creditsButton.setPosition(uiOriginX, uiOriginY - 100, Align.center);
+		creditsButton.setPosition(uiOriginX, uiOriginY - 150, Align.center);
 		stage.addActor(creditsButton);
 		
 		TextButton exitButton = new TextButton("Exit", game.getUISkin());
-		exitButton.setPosition(uiOriginX, uiOriginY - 150, Align.center);
+		exitButton.setPosition(uiOriginX, uiOriginY - 200, Align.center);
 		stage.addActor(exitButton);
 		
 		playButton.addListener(new ActorGestureListener(){
@@ -77,6 +81,15 @@ public class MainMenu extends ScreenAdapter{
 			public void tap(InputEvent event, float x, float y, int count, int button){
 				super.tap(event, x, y, count, button);
 				game.setScreen(new MainGame(game));
+				dispose();
+			}
+		});
+		
+		highscoreButton.addListener(new ActorGestureListener(){
+			@Override
+			public void tap(InputEvent event, float x, float y, int count, int button){
+				super.tap(event, x, y, count, button);
+				game.setScreen(new HighScoreScreen(game));
 				dispose();
 			}
 		});
