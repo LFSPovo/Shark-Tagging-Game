@@ -202,6 +202,9 @@ public class MainGame extends ScreenAdapter{
 		else{
 			// Calculates a multiplier, either -1 or 1, based on
 			// where the mouse is relative to the starting point of touch
+			
+			// This is used to make sure a tag is no smaller than minTagSize
+			// on either side
 			int axisX = (int)((touch.x - touchStart.x) /
 					Math.abs(touch.x - touchStart.x));
 			if(axisX == 0){
@@ -246,10 +249,23 @@ public class MainGame extends ScreenAdapter{
 				tagEnd.y = touchStart.y + minTagSize * axisY;
 			}
 		}
+		
+		//TODO do not allow size less than minTagSize even after
+		// clamping the points to screen
+		containPoint(tagStart);
+		containPoint(tagEnd);
 	}
 	
 	private float distance(Vector2 point1, Vector2 point2){
 		//sqrt((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
 		return (float)Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
+	}
+	
+	//makes sure the point does not go outside the screen
+	private void containPoint(Vector2 point){
+		if(point.x < 0) point.x = 0;
+		if(point.x > game.WORLD_WIDTH) point.x = game.WORLD_WIDTH;
+		if(point.y < 0) point.y = 0;
+		if(point.y > game.WORLD_HEIGHT) point.y = game.WORLD_HEIGHT;
 	}
 }
