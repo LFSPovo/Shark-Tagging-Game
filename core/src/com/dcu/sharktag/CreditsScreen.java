@@ -39,7 +39,7 @@ public class CreditsScreen extends ScreenAdapter{
 		Gdx.input.setInputProcessor(stage);
 		
 		batch = new SpriteBatch();
-		credits = new Texture(Gdx.files.internal("ui/credits2.png"));
+		credits = new Texture(Gdx.files.internal("ui/credits.png"));
 		
 //		Gdx.gl.glClearColor(1, 0, 0, 1);
 		
