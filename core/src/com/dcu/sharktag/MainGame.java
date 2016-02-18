@@ -1,25 +1,15 @@
 package com.dcu.sharktag;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class MainGame extends ScreenAdapter{
-	
-	private SharkTag game;
-	private Stage stage;
+public class MainGame extends AbstractScreen{
 	
 	private ShapeRenderer shapeRenderer;
 	private SpriteBatch batch;
@@ -33,22 +23,19 @@ public class MainGame extends ScreenAdapter{
 	private Vector2 tagStart = new Vector2(0, 0);
 	private Vector2 tagEnd = new Vector2(0, 0);
 	private int minTagSize = 100;	// For both horizontal and vertical sides
-	private int tagGrabArea = 30;	// How close the user needs to touch near
+	private int tagGrabArea = 100;	// How close the user needs to touch near
 									// the handle to grab it
 	
 	private boolean dragStart = false;
 	private boolean dragEnd = false;
 	
 	public MainGame(SharkTag game){
-		this.game = game;
+		super(game);
 	}
 	
 	@Override
 	public void show(){
-		stage = new Stage(new FitViewport(game.WORLD_WIDTH, game.WORLD_HEIGHT));
-		Gdx.input.setInputProcessor(stage);
-		
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		super.show();
 		
 		shapeRenderer = new ShapeRenderer();
 		batch = new SpriteBatch();
@@ -65,17 +52,7 @@ public class MainGame extends ScreenAdapter{
 		clearScreen();
 		draw();
 		drawTags();
-		stage.act();
-		stage.draw();
-	}
-	
-	@Override
-	public void resize(int width, int height){
-		Viewport vp = stage.getViewport();
-		// Set screen size
-		vp.update(width, height);
-		// Use updated viewport
-		stage.setViewport(vp);
+		super.render(delta);
 	}
 	
 	@Override
@@ -83,11 +60,7 @@ public class MainGame extends ScreenAdapter{
 		if(image != null){
 			image.dispose();
 		}
-		stage.dispose();
-	}
-	
-	private void clearScreen(){
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		super.dispose();
 	}
 	
 	private void draw(){

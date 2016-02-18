@@ -1,69 +1,34 @@
 package com.dcu.sharktag;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class LoginScreen extends ScreenAdapter{
-	
-	private SharkTag game;
-	private Stage stage;
+public class LoginScreen extends AbstractScreen{
 	
 	private TextField loginName;
 	private TextField loginPassword;
-	
-	private float uiOriginX = 0;
-	private float uiOriginY = 0;
 
 	public LoginScreen(SharkTag game){
-		this.game = game;
+		super(game);
 	}
 	
 	@Override
 	public void show(){
-		stage = new Stage(new FitViewport(game.WORLD_WIDTH, game.WORLD_HEIGHT));
-		Gdx.input.setInputProcessor(stage);
-		
-		uiOriginX = game.WORLD_WIDTH / 2;
-		uiOriginY = 4 * game.WORLD_HEIGHT / 5 + 50;
-		
+		super.show();
 		buildGUI();
 	}
 	
 	@Override
 	public void render(float delta){
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		stage.act();
-		stage.draw();
-	}
-	
-	@Override
-	public void resize(int width, int height){
-		Viewport vp = stage.getViewport();
-		// Set screen size
-		vp.update(width, height);
-		// Use updated viewport
-		stage.setViewport(vp);
-	}
-	
-	@Override
-	public void dispose(){
-		stage.dispose();
+		clearScreen();
+		super.render(delta);
 	}
 	
 	private void buildGUI(){
-//		TextField.TextFieldStyle textFieldStyle = game.getUISkin().get(TextField.TextFieldStyle.class);
-//		textFieldStyle.font.getData().scale(0.1f);
 		Label usernameLabel = new Label("Username", game.getUISkin());
 		usernameLabel.setPosition(uiOriginX, uiOriginY + 30, Align.center);
 		stage.addActor(usernameLabel);
