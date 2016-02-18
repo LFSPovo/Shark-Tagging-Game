@@ -1,44 +1,35 @@
 package com.dcu.sharktag;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.GL20;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class RegisterScreen extends ScreenAdapter{
-
-	private SharkTag game;
-	
-	private Stage stage;
+public class RegisterScreen extends AbstractScreen{
 	
 	private TextField username;
 	private TextField email;
 	private TextField password;
 	private TextField password2;//repeat
 	
-	private float uiOriginX = 0;
-	private float uiOriginY = 0;
-	
 	public RegisterScreen(SharkTag game){
-		this.game = game;
+		super(game);
 	}
 	
 	@Override
 	public void show(){
-		stage = new Stage(new FitViewport(game.WORLD_WIDTH, game.WORLD_HEIGHT));
-		Gdx.input.setInputProcessor(stage);
-		
-		uiOriginX = game.WORLD_WIDTH / 2;
-		uiOriginY = 4 * game.WORLD_HEIGHT / 5 + 50;
-		
+		super.show();
 		buildGUI();
 	}
 	
@@ -46,23 +37,8 @@ public class RegisterScreen extends ScreenAdapter{
 	public void render(float delta){
 		update(delta);
 		
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		stage.act();
-		stage.draw();
-	}
-	
-	@Override
-	public void resize(int width, int height){
-		Viewport vp = stage.getViewport();
-		// Set screen size
-		vp.update(width, height);
-		// Use updated viewport
-		stage.setViewport(vp);
-	}
-	
-	@Override
-	public void dispose(){
-		stage.dispose();
+		clearScreen();
+		super.render(delta);
 	}
 	
 	private void buildGUI(){
@@ -115,7 +91,7 @@ public class RegisterScreen extends ScreenAdapter{
 			@Override
 			public void tap(InputEvent event, float x, float y, int count, int button){
 				super.tap(event, x, y, count, button);
-				//TODO register user
+				register();
 				dispose();
 			}
 		});
@@ -148,6 +124,40 @@ public class RegisterScreen extends ScreenAdapter{
 		}
 		else{
 			password2.setColor(0, 1, 0, 1);
+		}
+	}
+	
+	private void register(){
+		String serverURL = "http://povilas.ovh:8080/register";
+		String charSet = "UTF-8";
+		String query = "";
+		
+		try{
+			query = String.format("username=%s&email=%s&password=%s",
+					URLEncoder.encode(username.getText(), charSet),
+					URLEncoder.encode(email.getText(), charSet),
+					URLEncoder.encode(password.getText(), charSet));
+		
+			URLConnection connection = new URL(serverURL).openConnection();
+			connection.setDoOutput(true);
+			
+			connection.setRequestProperty("Accept-Charset", charSet);
+			connection.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded;charset=" + charSet);
+			
+			OutputStream output = connection.getOutputStream();
+			output.write(query.getBytes(charSet));
+			
+			InputStream response = connection.getInputStream();
+		}
+		catch(UnsupportedEncodingException e){
+			e.printStackTrace();
+		}
+		catch(MalformedURLException e){
+			e.printStackTrace();
+		}
+		catch(IOException e){
+			e.printStackTrace();
 		}
 	}
 }

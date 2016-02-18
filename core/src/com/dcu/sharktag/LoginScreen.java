@@ -79,7 +79,10 @@ public class LoginScreen extends AbstractScreen{
 	}
 	
 	private boolean loginUser(String name, String password){
-		//TODO implement connection to server
+		String serverURL = "http://povilas.ovh";
+//		String charset = "UTF-8";
+//		
+//		String query = String.format()
 		return true;
 	}
 }
