@@ -15,6 +15,7 @@ import sun.org.mozilla.javascript.json.JsonParser;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -180,7 +181,11 @@ public class RegisterScreen extends AbstractScreen{
 					return true;
 				}
 				else{
-					//TODO server did not accept dialog box
+					Dialog dialog = new Dialog("Error", game.getUISkin());
+					dialog.text(serverMessage);
+					dialog.button("OK");
+					dialog.show(stage);
+					
 					return false;
 				}
 			}
@@ -197,7 +202,14 @@ public class RegisterScreen extends AbstractScreen{
 			return false;
 		}
 		else{
-			//TODO missing information error dialog
+			Gdx.app.log("debug", "Some fields are filled incorrectly");
+			
+			Dialog dialog = new Dialog("Error", game.getUISkin());
+			dialog.text("Some field are filled incorrectly");
+			dialog.button("OK");
+			dialog.getContentTable().setHeight(300);
+			dialog.show(stage);
+			
 			return false;
 		}
 	}
