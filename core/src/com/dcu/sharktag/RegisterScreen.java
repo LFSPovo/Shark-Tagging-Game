@@ -1,7 +1,9 @@
 package com.dcu.sharktag;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -9,12 +11,18 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
+import sun.org.mozilla.javascript.json.JsonParser;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 
 public class RegisterScreen extends AbstractScreen{
 	
@@ -91,8 +99,10 @@ public class RegisterScreen extends AbstractScreen{
 			@Override
 			public void tap(InputEvent event, float x, float y, int count, int button){
 				super.tap(event, x, y, count, button);
-				register();
-				dispose();
+				if(register()){
+					game.setScreen(new LoginScreen(game));
+					dispose();
+				}
 			}
 		});
 		
@@ -127,37 +137,68 @@ public class RegisterScreen extends AbstractScreen{
 		}
 	}
 	
-	private void register(){
+	private boolean register(){
 		String serverURL = "http://povilas.ovh:8080/register";
 		String charSet = "UTF-8";
 		String query = "";
 		
-		try{
-			query = String.format("username=%s&email=%s&password=%s",
-					URLEncoder.encode(username.getText(), charSet),
-					URLEncoder.encode(email.getText(), charSet),
-					URLEncoder.encode(password.getText(), charSet));
+		if(password.getText().equals(password2.getText()) &&
+				email.getText().contains("@")){
 		
-			URLConnection connection = new URL(serverURL).openConnection();
-			connection.setDoOutput(true);
+			try{
+				query = String.format("username=%s&email=%s&password=%s",
+						URLEncoder.encode(username.getText(), charSet),
+						URLEncoder.encode(email.getText(), charSet),
+						URLEncoder.encode(password.getText(), charSet));
 			
-			connection.setRequestProperty("Accept-Charset", charSet);
-			connection.setRequestProperty("Content-Type",
-					"application/x-www-form-urlencoded;charset=" + charSet);
+				URLConnection connection = new URL(serverURL).openConnection();
+				connection.setDoOutput(true);
+				
+				connection.setRequestProperty("Accept-Charset", charSet);
+				connection.setRequestProperty("Content-Type",
+						"application/x-www-form-urlencoded;charset=" + charSet);
+				
+				OutputStream output = connection.getOutputStream();
+				output.write(query.getBytes(charSet));
+				
+				InputStream response = connection.getInputStream();
+				
+				BufferedReader reader = new BufferedReader(new InputStreamReader(response));
+				
+				String line = reader.readLine();
+				
+				Json json = new Json();
+				JsonValue value = new JsonReader().parse(line);
+				
+				int serverResponse = value.get("success").asInt();
+				String serverMessage = value.get("message").asString();
+				
+				Gdx.app.log("debug", "" + serverResponse);
+				Gdx.app.log("debug", serverMessage);
+
+				if(serverResponse == 1){
+					return true;
+				}
+				else{
+					//TODO server did not accept dialog box
+					return false;
+				}
+			}
+			catch(UnsupportedEncodingException e){
+				e.printStackTrace();
+			}
+			catch(MalformedURLException e){
+				e.printStackTrace();
+			}
+			catch(IOException e){
+				e.printStackTrace();
+			}
 			
-			OutputStream output = connection.getOutputStream();
-			output.write(query.getBytes(charSet));
-			
-			InputStream response = connection.getInputStream();
+			return false;
 		}
-		catch(UnsupportedEncodingException e){
-			e.printStackTrace();
-		}
-		catch(MalformedURLException e){
-			e.printStackTrace();
-		}
-		catch(IOException e){
-			e.printStackTrace();
+		else{
+			//TODO missing information error dialog
+			return false;
 		}
 	}
 }
