@@ -1,18 +1,5 @@
 package com.dcu.sharktag;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-
-import sun.org.mozilla.javascript.json.JsonParser;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -21,9 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 
 public class RegisterScreen extends AbstractScreen{
 	
@@ -53,47 +37,51 @@ public class RegisterScreen extends AbstractScreen{
 	private void buildGUI(){
 		//USERNAME
 		Label usernameLabel = new Label("Username", game.getUISkin());
-		usernameLabel.setPosition(uiOriginX, uiOriginY + 30, Align.center);
+		usernameLabel.setPosition(game.WORLD_WIDTH / 4, uiOriginY + 30, Align.center);
 		stage.addActor(usernameLabel);
 		username = new TextField("", game.getUISkin());
-		username.setPosition(uiOriginX, uiOriginY, Align.center);
+		username.setWidth(game.WORLD_WIDTH / 2.2f);
+		username.setPosition(game.WORLD_WIDTH / 4, uiOriginY, Align.center);
 		stage.addActor(username);
 		
 		//EMAIL
 		Label emailLabel = new Label("Email", game.getUISkin());
-		emailLabel.setPosition(uiOriginX, uiOriginY - 50, Align.center);
+		emailLabel.setPosition(game.WORLD_WIDTH / 4, uiOriginY - 50, Align.center);
 		stage.addActor(emailLabel);
 		email = new TextField("", game.getUISkin());
-		email.setPosition(uiOriginX, uiOriginY - 80, Align.center);
+		email.setWidth(game.WORLD_WIDTH / 2.2f);
+		email.setPosition(game.WORLD_WIDTH / 4, uiOriginY - 80, Align.center);
 		stage.addActor(email);
 		
 		//PASSWORD
 		Label passwordLabel = new Label("Password", game.getUISkin());
-		passwordLabel.setPosition(uiOriginX, uiOriginY - 130, Align.center);
+		passwordLabel.setPosition(game.WORLD_WIDTH / 4 * 3, uiOriginY + 30, Align.center);
 		stage.addActor(passwordLabel);
 		password = new TextField("", game.getUISkin());
 		password.setPasswordCharacter('*');
 		password.setPasswordMode(true);
-		password.setPosition(uiOriginX, uiOriginY - 160, Align.center);
+		password.setWidth(game.WORLD_WIDTH / 2.2f);
+		password.setPosition(game.WORLD_WIDTH / 4 * 3, uiOriginY, Align.center);
 		stage.addActor(password);
 		
 		//REPEAT PASSWORD
 		Label password2Label = new Label("Repeat Password", game.getUISkin());
-		password2Label.setPosition(uiOriginX, uiOriginY - 210, Align.center);
+		password2Label.setPosition(game.WORLD_WIDTH / 4 * 3, uiOriginY - 50, Align.center);
 		stage.addActor(password2Label);
 		password2 = new TextField("", game.getUISkin());
 		password2.setPasswordCharacter('*');
 		password2.setPasswordMode(true);
-		password2.setPosition(uiOriginX, uiOriginY - 240, Align.center);
+		password2.setWidth(game.WORLD_WIDTH / 2.2f);
+		password2.setPosition(game.WORLD_WIDTH / 4 * 3, uiOriginY - 80, Align.center);
 		stage.addActor(password2);
 		
 		//BUTTONS
 		TextButton submit = new TextButton("Register", game.getUISkin());
-		submit.setPosition(uiOriginX, uiOriginY - 290, Align.center);
+		submit.setPosition(uiOriginX, uiOriginY - 140, Align.center);
 		stage.addActor(submit);
 		
 		TextButton cancel = new TextButton("Cancel", game.getUISkin());
-		cancel.setPosition(uiOriginX, uiOriginY - 340, Align.center);
+		cancel.setPosition(uiOriginX, uiOriginY - 190, Align.center);
 		stage.addActor(cancel);
 		
 		submit.addListener(new ActorGestureListener(){
@@ -139,73 +127,29 @@ public class RegisterScreen extends AbstractScreen{
 	}
 	
 	private boolean register(){
-		String serverURL = "http://povilas.ovh:8080/register";
-		String charSet = "UTF-8";
-		String query = "";
 		
 		if(password.getText().equals(password2.getText()) &&
 				email.getText().contains("@")){
 		
-			try{
-				query = String.format("username=%s&email=%s&password=%s",
-						URLEncoder.encode(username.getText(), charSet),
-						URLEncoder.encode(email.getText(), charSet),
-						URLEncoder.encode(password.getText(), charSet));
+			String status = game.getComm().register(
+					username.getText(), email.getText(), password.getText());
 			
-				URLConnection connection = new URL(serverURL).openConnection();
-				connection.setDoOutput(true);
+			if(!status.equals("")){
+				Dialog dialog = new Dialog("Error", game.getUISkin());
+				dialog.text(status);
+				dialog.button("OK");
+				dialog.show(stage);
 				
-				connection.setRequestProperty("Accept-Charset", charSet);
-				connection.setRequestProperty("Content-Type",
-						"application/x-www-form-urlencoded;charset=" + charSet);
-				
-				OutputStream output = connection.getOutputStream();
-				output.write(query.getBytes(charSet));
-				
-				InputStream response = connection.getInputStream();
-				
-				BufferedReader reader = new BufferedReader(new InputStreamReader(response));
-				
-				String line = reader.readLine();
-				
-				Json json = new Json();
-				JsonValue value = new JsonReader().parse(line);
-				
-				int serverResponse = value.get("success").asInt();
-				String serverMessage = value.get("message").asString();
-				
-				Gdx.app.log("debug", "" + serverResponse);
-				Gdx.app.log("debug", serverMessage);
-
-				if(serverResponse == 1){
-					return true;
-				}
-				else{
-					Dialog dialog = new Dialog("Error", game.getUISkin());
-					dialog.text(serverMessage);
-					dialog.button("OK");
-					dialog.show(stage);
-					
-					return false;
-				}
-			}
-			catch(UnsupportedEncodingException e){
-				e.printStackTrace();
-			}
-			catch(MalformedURLException e){
-				e.printStackTrace();
-			}
-			catch(IOException e){
-				e.printStackTrace();
+				return false;
 			}
 			
-			return false;
+			return true;
 		}
 		else{
 			Gdx.app.log("debug", "Some fields are filled incorrectly");
 			
 			Dialog dialog = new Dialog("Error", game.getUISkin());
-			dialog.text("Some field are filled incorrectly");
+			dialog.text("Some fields are filled incorrectly");
 			dialog.button("OK");
 			dialog.getContentTable().setHeight(300);
 			dialog.show(stage);

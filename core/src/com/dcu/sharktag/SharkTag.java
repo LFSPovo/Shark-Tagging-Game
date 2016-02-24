@@ -9,7 +9,11 @@ public class SharkTag extends Game {
 	public final float WORLD_WIDTH = 854;
 	public final float WORLD_HEIGHT = 480;
 	
+	public static boolean internet = false;
+	
 	private Skin uiSkin;
+	
+	private Communication comm = new Communication();
 	
 	@Override
 	public void create () {
@@ -19,5 +23,9 @@ public class SharkTag extends Game {
 	
 	public Skin getUISkin(){
 		return uiSkin;
+	}
+	
+	public Communication getComm(){
+		return comm;
 	}
 }

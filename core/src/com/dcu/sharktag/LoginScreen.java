@@ -1,30 +1,13 @@
 package com.dcu.sharktag;
 
-import java.awt.image.ImagingOpException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 
 public class LoginScreen extends AbstractScreen{
 	
@@ -69,7 +52,9 @@ public class LoginScreen extends AbstractScreen{
 		usernameLabel.setPosition(uiOriginX, uiOriginY + 30, Align.center);
 		stage.addActor(usernameLabel);
 		loginName = new TextField("", game.getUISkin());
+		loginName.setWidth(game.WORLD_WIDTH / 2.2f);
 		loginName.setPosition(uiOriginX, uiOriginY, Align.center);
+		
 		stage.addActor(loginName);
 		
 		Label passwordLabel = new Label("Password", game.getUISkin());
@@ -78,6 +63,7 @@ public class LoginScreen extends AbstractScreen{
 		loginPassword = new TextField("", game.getUISkin());
 		loginPassword.setPasswordMode(true);
 		loginPassword.setPasswordCharacter('*');
+		loginPassword.setWidth(game.WORLD_WIDTH / 2.2f);
 		loginPassword.setPosition(uiOriginX, uiOriginY - 80, Align.center);
 		stage.addActor(loginPassword);
 		
@@ -98,9 +84,6 @@ public class LoginScreen extends AbstractScreen{
 					game.setScreen(new MainMenu(game));
 					dispose();
 				}
-				else{
-					//TODO error message
-				}
 			}
 		});
 		
@@ -114,89 +97,40 @@ public class LoginScreen extends AbstractScreen{
 		});
 	}
 	
-	private boolean loginUser(String name, String password){
-		String serverURL = "http://povilas.ovh:8080/login";
-		String charSet = "UTF-8";
-		String query = "";
-		
+	private boolean loginUser(String name, String password){		
 		if(!loginName.getText().equals("") && !loginPassword.getText().equals("")){
+			String status = game.getComm().logIn(loginName.getText(), loginPassword.getText());
 			
-			try{
-				query = String.format("username=%s&password=%s",
-						URLEncoder.encode(loginName.getText(), charSet),
-						URLEncoder.encode(loginPassword.getText(), charSet));
+			if(!status.equals("")){
+				Dialog dialog = new Dialog("Error", game.getUISkin());
+				dialog.text(status);
+				dialog.button("OK");
+				dialog.show(stage);
 				
-				URLConnection connection = new URL(serverURL).openConnection();
-				connection.setDoOutput(true);
-				
-				connection.setRequestProperty("Accept-Charset", charSet);
-				connection.setRequestProperty("Content-Type",
-						"application/x-www-form-urlencoded;charset=" + charSet);
-				
-				OutputStream output = connection.getOutputStream();
-				output.write(query.getBytes(charSet));
-				
-				InputStream response = connection.getInputStream();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(response));
-				String line = reader.readLine();
-				
-				Json json = new Json();
-				JsonValue value = new JsonReader().parse(line);
-				int serverResponse = value.get("success").asInt();
-				String serverMessage = value.get("message").asString();
-				String sessionToken = value.get("token").asString();
-				
-				Gdx.app.log("debug", "" + serverResponse);
-				Gdx.app.log("debug", serverMessage);
-				Gdx.app.log("debug", sessionToken);
-				
-				if(serverResponse == 1){
-					return true;
-				}
-				else{
-					loginName.setColor(1, 0, 0, 1);
-//					loginName.setText("");
-					nameWasBlank = true;
-					
-					loginPassword.setColor(1, 0, 0, 1);
-					loginPassword.setText("");
-					passwordWasBlank = true;
-					
-					Dialog dialog = new Dialog("Error", game.getUISkin());
-					dialog.text(serverMessage);
-					dialog.button("OK");
-					dialog.show(stage);
-					
-					return false;
-				}
+				return false;
 			}
-			catch(UnsupportedEncodingException e){
-				e.printStackTrace();
-			}
-			catch(MalformedURLException e){
-				e.printStackTrace();
-			}
-			catch(IOException e){
-				e.printStackTrace();
-			}
+			
+			return true;
 		}
-		Gdx.app.log("debug", "Some fields are empty");
-		
-		if(loginName.getText().equals("")){
-			loginName.setColor(1, 0, 0, 1);
-			nameWasBlank = true;
+		else{
+			Gdx.app.log("debug", "Some fields are empty");
+			
+			if(loginName.getText().equals("")){
+				loginName.setColor(1, 0, 0, 1);
+				nameWasBlank = true;
+			}
+			
+			if(loginPassword.getText().equals("")){
+				loginPassword.setColor(1, 0, 0, 1);
+				passwordWasBlank = true;
+			}
+			
+			Dialog dialog = new Dialog("Error", game.getUISkin());
+			dialog.text("Some of the fields are empty");
+			dialog.button("OK");
+			dialog.show(stage);
+			
+			return false;
 		}
-		
-		if(loginPassword.getText().equals("")){
-			loginPassword.setColor(1, 0, 0, 1);
-			passwordWasBlank = true;
-		}
-		
-		Dialog dialog = new Dialog("Error", game.getUISkin());
-		dialog.text("Some of the fields are empty");
-		dialog.button("OK");
-		dialog.show(stage);
-		
-		return false;
 	}
 }
