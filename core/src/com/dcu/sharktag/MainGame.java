@@ -101,7 +101,8 @@ public class MainGame extends AbstractScreen{
 		//TODO fetch image from the server
 		
 		// Temporary image loading
-		Texture t = new Texture(Gdx.files.internal("resolution-test1.jpg"));
+//		Texture t = new Texture(Gdx.files.internal("resolution-test1.jpg"));
+		Texture t = game.getComm().fetchImage();
 		
 		// Correct image height relative to image width to fit the
 		// image on the screen
@@ -258,6 +259,14 @@ public class MainGame extends AbstractScreen{
 				super.tap(event, x, y, count, button);
 				game.setScreen(new MainMenu(game));
 				dispose();
+			}
+		});
+		
+		nextButton.addListener(new ActorGestureListener(){
+			@Override
+			public void tap(InputEvent event, float x, float y, int count, int button){
+				super.tap(event, x, y, count, button);
+				image = fetchImage();
 			}
 		});
 	}
