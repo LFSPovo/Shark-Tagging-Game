@@ -216,12 +216,6 @@ public Texture fetchImage(){
 			
 			URLConnection connection = new URL(serverURL + "/getimage").openConnection();
 			connection.setDoOutput(false);
-//			connection.setRequestProperty("Accept-Charset", charset);
-//			connection.setRequestProperty("Content-Type",
-//					"application/x-www-form-urlencoded;charset=" + charset);
-			
-//			OutputStream output = connection.getOutputStream();
-//			output.write(query.getBytes(charset));
 			
 			InputStream response = connection.getInputStream();
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -254,7 +248,9 @@ public Texture fetchImage(){
 		}
 		
 //		byte[] decodedBytes = Base64Coder.decode(imageData);
-		bucket = new Texture(new Pixmap(imageData, 0, imageData.length));
+		Pixmap pixMap = new Pixmap(imageData, 0, imageData.length);
+		bucket = new Texture(pixMap);
+		pixMap.dispose();
 		
 		return bucket;
 	}
