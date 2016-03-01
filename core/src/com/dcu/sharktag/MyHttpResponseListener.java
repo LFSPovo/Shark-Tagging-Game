@@ -80,6 +80,24 @@ public class MyHttpResponseListener implements HttpResponseListener {
 	public boolean isResponseReceived(){
 		return responseReceived;
 	}
+	
+	public int getInt(String key){
+		if(jsonValue != null){
+			return jsonValue.get(key).asInt();
+		}
+		else{
+			return -1;
+		}
+	}
+	
+	public String getString(String key){
+		if(jsonValue != null){
+			return jsonValue.get(key).asString();
+		}
+		else{
+			return "";
+		}
+	}
 
 	public int getStatus(){
 		if(jsonValue != null){
@@ -102,6 +120,25 @@ public class MyHttpResponseListener implements HttpResponseListener {
 	public String getSessionToken(){
 		if(jsonValue != null){
 			return jsonValue.get("token").asString();
+		}
+		else{
+			return "Could not reach server";
+		}
+	}
+	
+	public String getImageID(){
+		if(jsonValue != null){
+			return jsonValue.get("imageId").asString();
+		}
+		else{
+			return "Could not reach server";
+		}
+	}
+	
+	//URL to the image
+	public String getURL(){
+		if(jsonValue != null){
+			return jsonValue.get("URL").asString();
 		}
 		else{
 			return "Could not reach server";
