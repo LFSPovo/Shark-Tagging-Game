@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
+import com.badlogic.gdx.utils.Array;
 
 public class MainGame extends AbstractScreen{
 	
@@ -29,6 +30,8 @@ public class MainGame extends AbstractScreen{
 	private boolean dragStart = false;
 	private boolean dragEnd = false;
 	
+	Array<Tag> tags = new Array<Tag>();
+	
 	public MainGame(SharkTag game){
 		super(game);
 	}
@@ -44,11 +47,14 @@ public class MainGame extends AbstractScreen{
 		image = fetchImage();
 		
 		buildGUI();
+		
+		tags.add(new Tag(100, 100));
 	}
 	
 	@Override
 	public void render(float delta){
-		updateTagging();
+//		updateTagging();
+		update();
 		
 		clearScreen();
 		draw();
@@ -82,20 +88,10 @@ public class MainGame extends AbstractScreen{
 		shapeRenderer.setProjectionMatrix(stage.getCamera().projection);
 		shapeRenderer.setTransformMatrix(stage.getCamera().view);
 		
-		shapeRenderer.setColor(1, 0, 0, 1);
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-		shapeRenderer.rect(tagStart.x, tagStart.y,
-				tagEnd.x - tagStart.x, tagEnd.y - tagStart.y);
-		
-		shapeRenderer.setColor(0, 0, 1, 1);	// Debug
-		shapeRenderer.circle(tagStart.x, tagStart.y, 5);
-		
-		shapeRenderer.setColor(0, 1, 0, 1);
-		shapeRenderer.circle(tagEnd.x, tagEnd.y, 5);
-		
-		shapeRenderer.setColor(1, 0, 1, 1);
-		shapeRenderer.rect(touchStart.x - 5, touchStart.y - 5, 10, 10);
-		shapeRenderer.end();
+		for(Tag t : tags){
+			t.update(imageSize);
+			t.render(shapeRenderer);
+		}
 	}
 	
 	private Texture fetchImage(){
@@ -280,5 +276,24 @@ public class MainGame extends AbstractScreen{
 				image = fetchImage();
 			}
 		});
+	}
+	
+	private void update(){
+		if(Gdx.input.isTouched()){
+			Vector2 touchPoint = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+			touchPoint = stage.getViewport().unproject(touchPoint);
+			
+			for(Tag t : tags){
+				
+				if(t.contains(touchPoint)){
+					Gdx.app.log("debug", "TOUCH!");
+					t.setActive(true);
+				}
+				else{
+					Gdx.app.log("debug", "NOT!");
+					t.setActive(false);
+				}
+			}
+		}
 	}
 }
