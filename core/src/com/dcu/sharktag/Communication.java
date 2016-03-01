@@ -1,39 +1,19 @@
 package com.dcu.sharktag;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.ConnectException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.HashMap;
-
-import sun.misc.IOUtils;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net.HttpMethods;
 import com.badlogic.gdx.Net.HttpRequest;
-import com.badlogic.gdx.Net.HttpResponse;
-import com.badlogic.gdx.Net.HttpResponseListener;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
-import com.badlogic.gdx.net.HttpParametersUtils;
-import com.badlogic.gdx.utils.Base64Coder;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
+import com.dcu.sharktag.ServerRequests.ImageRequest;
+import com.dcu.sharktag.ServerRequests.LoginRequest;
+import com.dcu.sharktag.ServerRequests.RegisterRequest;
+import com.dcu.sharktag.ServerRequests.ServerRequestBuilder;
 
 public class Communication {
 	
 	private String serverURL = "http://povilas.ovh:8080";
-	private String charset = "UTF-8";
-	
+
 	private String sessionToken = "";
 	
 	public String jsonValue = "";
@@ -50,18 +30,21 @@ public class Communication {
 		return sessionToken;
 	}
 	
+	// Builds a HttpRequest object from a route and object data
+	private HttpRequest buildRequest(String route, Object data) {
+		ServerRequestBuilder reqBuilder = new ServerRequestBuilder();
+		reqBuilder.newRequest();
+		reqBuilder.url(serverURL + route);
+		reqBuilder.method(HttpMethods.POST);
+		reqBuilder.jsonContent(data);
+		return reqBuilder.build();
+	}
+	
 	public String logIn(String username, String password){
 		
 		String status = "ERROR";
 		
-		HttpRequest request = new HttpRequest(HttpMethods.POST);
-		request.setUrl(serverURL + "/login");
-		
-		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("username", username);
-		params.put("password", password);
-		String query = HttpParametersUtils.convertHttpParameters(params);
-		request.setContent(query);
+		HttpRequest request = buildRequest("/login", new LoginRequest(username, password));
 		
 		MyHttpResponseListener customListener = new MyHttpResponseListener();
 		
@@ -87,15 +70,7 @@ public class Communication {
 		
 		String status = "ERROR";
 		
-		HttpRequest request = new HttpRequest(HttpMethods.POST);
-		request.setUrl(serverURL + "/register");
-		
-		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("username", username);
-		params.put("email", email);
-		params.put("password", password);
-		String query = HttpParametersUtils.convertHttpParameters(params);
-		request.setContent(query);
+		HttpRequest request = buildRequest("/register", new RegisterRequest(username, email, password));
 		
 		MyHttpResponseListener customListener = new MyHttpResponseListener();
 		
@@ -120,13 +95,7 @@ public String requestImage(){
 	
 	String url = "";
 	
-	HttpRequest request = new HttpRequest(HttpMethods.POST);
-	request.setUrl(serverURL + "/reqimage");
-	
-	HashMap<String, String> params = new HashMap<String, String>();
-	params.put("token", sessionToken);
-	String query = HttpParametersUtils.convertHttpParameters(params);
-	request.setContent(query);
+	HttpRequest request = buildRequest("/reqimage", new ImageRequest(sessionToken));
 	
 	MyHttpResponseListener response = new MyHttpResponseListener();
 	Gdx.net.sendHttpRequest(request, response);
