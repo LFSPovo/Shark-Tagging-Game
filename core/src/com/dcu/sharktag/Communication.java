@@ -69,11 +69,12 @@ public class Communication {
 		
 		while(!customListener.isResponseReceived());
 		
-		int serverResponse = customListener.getStatus();
-		String serverMessage = customListener.getMessage();
+		int serverResponse = customListener.getInt("success");
+		String serverMessage = customListener.getString("message");
 		
 		if(serverResponse == 1){
 			status = "";
+			sessionToken = customListener.getString("token");
 		}
 		else{
 			status = serverMessage;
@@ -102,8 +103,8 @@ public class Communication {
 		
 		while(!customListener.isResponseReceived());
 		
-		int serverResponse = customListener.getStatus();
-		String serverMessage = customListener.getMessage();
+		int serverResponse = customListener.getInt("success");
+		String serverMessage = customListener.getString("message");
 		
 		if(serverResponse == 1){
 			status = "";
@@ -115,73 +116,42 @@ public class Communication {
 		return status;
 	}
 	
-//	public Texture requestImage(){
-		
-//		Texture bucket;
-//		String imageData = "";
-//		
-//		try{
-//			String query = "";
-////			String query = String.format("username=%s&email=%s&password=%s",
-////					URLEncoder.encode(username, charset),
-////					URLEncoder.encode(email, charset),
-////					URLEncoder.encode(password, charset));
-//			
-//			URLConnection connection = new URL(serverURL + "/getimage").openConnection();
-//			connection.setDoOutput(false);
-//			connection.setRequestProperty("Accept-Charset", charset);
-//			connection.setRequestProperty("Content-Type",
-//					"application/x-www-form-urlencoded;charset=" + charset);
-//			
-//			OutputStream output = connection.getOutputStream();
-//			output.write(query.getBytes(charset));
-//			
-//			InputStream response = connection.getInputStream();
-//			String line = new BufferedReader(new InputStreamReader(response)).readLine();
-//			
-//			JsonValue value = new JsonReader().parse(line);
-////			int serverResponse = value.get("success").asInt();
-////			String serverMessage = value.get("message").asString();
-//			int imageID = value.get("id").asInt();
-//			imageData = value.get("image").asString();
-//			
-////			if(serverResponse == 1){
-////				status = "";
-////			}
-////			else{
-////				status = serverMessage;
-////			}
-//		}
-//		catch(UnsupportedEncodingException e){
-//			e.printStackTrace();
-////			status = "Unsupported encoding!";
-//		}
-//		catch(MalformedURLException e){
-//			e.printStackTrace();
-////			status = "Malformed URL!";
-//		}
-//		catch(ConnectException e){
-//			e.printStackTrace();
-////			status = "Server is unreachable!";
-//		}
-//		catch(IOException e){
-//			e.printStackTrace();
-////			status = "IO exception!";
-//		}
-//		
-//		byte[] decodedBytes = Base64Coder.decode(imageData);
-//		bucket = new Texture(new Pixmap(decodedBytes, 0, decodedBytes.length));
-//		
-//		return bucket;
-//	}
+public String requestImage(){
 	
-public Texture fetchImage(){
+	String url = "";
+	
+	HttpRequest request = new HttpRequest(HttpMethods.POST);
+	request.setUrl(serverURL + "/reqimage");
+	
+	HashMap<String, String> params = new HashMap<String, String>();
+	params.put("token", sessionToken);
+	String query = HttpParametersUtils.convertHttpParameters(params);
+	request.setContent(query);
+	
+	MyHttpResponseListener response = new MyHttpResponseListener();
+	Gdx.net.sendHttpRequest(request, response);
+	
+	while(!response.isResponseReceived());
+	
+	int serverStatus = response.getInt("success");
+	
+	if(serverStatus == 1){
+		url = response.getString("URL");
+		String imageId = response.getString("imageId");
+	}
+	else{
+		String serverMessage = response.getString("message");
+	}
+	return url;
+}
+	
+public Texture fetchImage(String url){
 		
 		Texture bucket = null;
 		byte[] imageData;
 		
 		HttpRequest request = new HttpRequest(HttpMethods.GET);
-		request.setUrl(serverURL + "/getimage");
+		request.setUrl(url);
 		request.setContent(null);
 		
 		MyHttpResponseListener customListener = new MyHttpResponseListener();
