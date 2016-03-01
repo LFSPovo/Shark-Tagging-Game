@@ -36,6 +36,7 @@ public class MainGame extends AbstractScreen{
 	@Override
 	public void show(){
 		super.show();
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		
 		shapeRenderer = new ShapeRenderer();
 		batch = new SpriteBatch();
@@ -71,7 +72,7 @@ public class MainGame extends AbstractScreen{
 		if(image != null){
 			batch.draw(image,
 					(game.WORLD_WIDTH - imageSize.x) / 2,	//if it's smaller than the screen,
-					(game.WORLD_HEIGHT - imageSize.y) / 2,	//center it
+					game.WORLD_HEIGHT - imageSize.y,
 					imageSize.x, imageSize.y);
 		}
 		batch.end();
@@ -98,34 +99,43 @@ public class MainGame extends AbstractScreen{
 	}
 	
 	private Texture fetchImage(){
-		//TODO fetch image from the server
+		Gdx.app.log("debug", "request image");
+		String imageUrl = game.getComm().requestImage();
+		Gdx.app.log("debug", "fetch image");
+		Texture t = game.getComm().fetchImage(imageUrl);
 		
-		// Temporary image loading
-//		Texture t = new Texture(Gdx.files.internal("resolution-test1.jpg"));
-		Texture t = game.getComm().fetchImage();
+		imageSize.x = t.getWidth();
+		imageSize.y = t.getHeight();
+		
+		float ratio = imageSize.x / imageSize.y;
+		
+		if(imageSize.y > game.WORLD_HEIGHT - 50){
+			imageSize.y = game.WORLD_HEIGHT - 50;
+			imageSize.x = imageSize.y * ratio;
+		}
 		
 		// Correct image height relative to image width to fit the
-		// image on the screen
-		if(t.getWidth() > game.WORLD_WIDTH){
-			float ratio = 854f / t.getWidth();
-			imageSize.y = (int)(t.getHeight() * ratio);
-		}
-		else{
-			imageSize.y = t.getHeight();
-		}
+//		// image on the screen
+//		if(t.getWidth() > game.WORLD_WIDTH){
+//			float ratio = 854f / t.getWidth();
+//			imageSize.y = (int)(t.getHeight() * ratio);
+//		}
+//		else{
+//			imageSize.y = t.getHeight();
+//		}
 		
 		// If the image was in any other aspect ratio than 16:9,
 		// it still needs correction of the width relative
 		// to its height
-		if(imageSize.y > game.WORLD_HEIGHT){
-			float ratio = 480f / imageSize.y;
-			imageSize.x = (int)(imageSize.y * ratio);
-		}
-		else{
-			// There is a possibility that the image is genuinely smaller
-			// than the screen resolution
-			imageSize.x = Math.min(t.getWidth(), game.WORLD_WIDTH);
-		}
+//		if(imageSize.y > game.WORLD_HEIGHT){
+//			float ratio = 480f / imageSize.y;
+//			imageSize.x = (int)(imageSize.y * ratio);
+//		}
+//		else{
+//			// There is a possibility that the image is genuinely smaller
+//			// than the screen resolution
+//			imageSize.x = Math.min(t.getWidth(), game.WORLD_WIDTH);
+//		}
 		
 		return t;
 	}
