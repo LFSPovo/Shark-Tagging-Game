@@ -27,10 +27,13 @@ public class MainGame extends AbstractScreen{
 	private int tagGrabArea = 100;	// How close the user needs to touch near
 									// the handle to grab it
 	
+	private Vector2 touchPoint = new Vector2();
+	
 	private boolean dragStart = false;
 	private boolean dragEnd = false;
 	
 	Array<Tag> tags = new Array<Tag>();
+	boolean touchDown = false;
 	
 	public MainGame(SharkTag game){
 		super(game);
@@ -48,7 +51,8 @@ public class MainGame extends AbstractScreen{
 		
 		buildGUI();
 		
-		tags.add(new Tag(100, 100));
+		addTag(100, 100);
+		addTag(300, 300);
 	}
 	
 	@Override
@@ -89,7 +93,7 @@ public class MainGame extends AbstractScreen{
 		shapeRenderer.setTransformMatrix(stage.getCamera().view);
 		
 		for(Tag t : tags){
-			t.update(imageSize);
+			t.update(imageSize, touchPoint);
 			t.render(shapeRenderer);
 		}
 	}
@@ -280,20 +284,50 @@ public class MainGame extends AbstractScreen{
 	
 	private void update(){
 		if(Gdx.input.isTouched()){
-			Vector2 touchPoint = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+			touchPoint = new Vector2(Gdx.input.getX(), Gdx.input.getY());
 			touchPoint = stage.getViewport().unproject(touchPoint);
 			
-			for(Tag t : tags){
-				
-				if(t.contains(touchPoint)){
-					Gdx.app.log("debug", "TOUCH!");
-					t.setActive(true);
-				}
-				else{
-					Gdx.app.log("debug", "NOT!");
-					t.setActive(false);
+			if(touchPoint.y > 50){
+			
+				for(Tag t : tags){
+					
+					if(t.isActive()){
+						t.grabHandles(touchPoint);
+					}
+					else{
+						if(t.contains(touchPoint) && !touchDown){
+							
+							for(int i = 0; i < tags.size; i++){
+								tags.get(i).setActive(false);
+							}
+							
+							t.setActive(true);
+						}
+						else{
+							t.setActive(false);
+						}
+					}
 				}
 			}
+			
+			touchDown = true;
 		}
+		else{
+			if(touchDown){
+				for(Tag t : tags){
+					t.releaseHandles();
+				}
+				touchDown = false;
+			}
+		}
+	}
+	
+	private void addTag(float x, float y){
+		
+		for(Tag t : tags){
+			t.setActive(false);
+		}
+		
+		tags.add(new Tag(x, y));
 	}
 }

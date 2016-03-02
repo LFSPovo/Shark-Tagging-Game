@@ -115,6 +115,8 @@ public String requestImage(){
 }
 	
 public Texture fetchImage(String url){
+	
+		Gdx.app.log("debug", url);
 		
 		Texture bucket = null;
 		byte[] imageData;
