@@ -8,9 +8,7 @@ public class SimpleTag {
 	protected Vector2 size = new Vector2();
 	
 	public SimpleTag(float x, float y){
-		position.x = x;
-		position.y = y;
-		size.x = 50;
-		size.y = 50;
+		position = new Vector2(x, y);
+		size = new Vector2(50, 50);
 	}
 }
