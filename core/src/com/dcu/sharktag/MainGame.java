@@ -101,7 +101,7 @@ public class MainGame extends AbstractScreen{
 	private Texture fetchImage(){
 		Gdx.app.log("debug", "request image");
 		String imageUrl = game.getComm().requestImage();
-		Gdx.app.log("debug", "fetch image");
+		Gdx.app.log("debug", imageUrl);
 		Texture t = game.getComm().fetchImage(imageUrl);
 		
 		imageSize.x = t.getWidth();
@@ -235,8 +235,6 @@ public class MainGame extends AbstractScreen{
 			}
 		}
 		
-		//TODO do not allow size less than minTagSize even after
-		// clamping the points to screen
 		containPoint(tagStart);
 		containPoint(tagEnd);
 	}
@@ -317,6 +315,7 @@ public class MainGame extends AbstractScreen{
 				for(Tag t : tags){
 					t.releaseHandles();
 				}
+				sortTags();
 				touchDown = false;
 			}
 		}
@@ -329,5 +328,25 @@ public class MainGame extends AbstractScreen{
 		}
 		
 		tags.add(new Tag(x, y));
+	}
+	
+	private void sortTags(){
+		//sort the tags by area, with smallest first
+		
+		int maxIndex = tags.size - 1;
+		
+		for(int i = 0; i < tags.size - 1; i++){
+			int index = 0;
+			
+			while(index < maxIndex){
+				if(tags.get(index).getArea() < tags.get(index + 1).getArea()){
+					Tag tmp = tags.removeIndex(index);
+					tags.insert(index + 1, tmp);
+				}
+				index++;
+			}
+			
+			maxIndex--;
+		}
 	}
 }

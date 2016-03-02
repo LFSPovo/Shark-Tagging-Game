@@ -22,11 +22,58 @@ public class Tag extends SimpleTag{
 	public void update(Vector2 imgSize, Vector2 point){
 		if(active){
 			if(resizing){
-				size = point.sub(position);
+				if(point.x < (854 / 2) - (imgSize.x / 2)){
+					point.x = (854 / 2) - (imgSize.x / 2);
+				}
+				if(point.x > (854 / 2) + (imgSize.x / 2)){
+					point.x = (854 / 2) + (imgSize.x / 2);
+				}
+				
+				if(point.y < 50){
+					point.y = 50;
+				}
+				if(point.y > 480){
+					point.y = 480;
+				}
+				
+				Vector2 tmp = point.sub(position);
+				
+				if(tmp.x >= 0 && tmp.x <= 50){
+					tmp.x = 50;
+				}
+				if(tmp.x < 0 && tmp.x >= -50){
+					tmp.x = -50;
+				}
+				
+				if(tmp.y >= 0 && tmp.y <= 50){
+					tmp.y = 50;
+				}
+				if(tmp.y < 0 && tmp.y >= -50){
+					tmp.y = -50;
+				}
+				
+				size = tmp;
 			}
-//			Gdx.app.log("debug", position.toString());
-			else if(moving){	
-				position = point;
+
+			else if(moving){
+				
+				Vector2 tmp = point;
+				
+				if(tmp.x < (854 / 2) - (imgSize.x / 2) + Math.abs(Math.min(size.x, 0))){
+					tmp.x = (854 / 2) - (imgSize.x / 2) + Math.abs(Math.min(size.x, 0));
+				}
+				if(tmp.x > (854 / 2) + (imgSize.x / 2) - Math.abs(Math.max(size.x, 0))){
+					tmp.x = (854 / 2) + (imgSize.x / 2) - Math.abs(Math.max(size.x, 0));
+				}
+				
+				if(tmp.y < 50 + Math.abs(Math.min(size.y, 0))){
+					tmp.y = 50 + Math.abs(Math.min(size.y, 0));
+				}
+				if(tmp.y > 480 - Math.abs(Math.max(size.y, 0))){
+					tmp.y = 480 - Math.abs(Math.max(size.y, 0));
+				}
+				
+				position = tmp;
 			}
 		}
 	}
@@ -111,6 +158,10 @@ public class Tag extends SimpleTag{
 	
 	public boolean isActive(){
 		return active;
+	}
+	
+	public float getArea(){
+		return size.x * size.y;
 	}
 	
 	private float distance(Vector2 point1, Vector2 point2){
