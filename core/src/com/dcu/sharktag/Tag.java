@@ -1,9 +1,17 @@
 package com.dcu.sharktag;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Objects;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 public class Tag extends SimpleTag{
 	
@@ -12,11 +20,15 @@ public class Tag extends SimpleTag{
 	private boolean resizing = false;
 	private boolean moving = false;
 	
+	private String text = "";
+	private GlyphLayout textLayout;
+	
 	public Tag(float x, float y){
 		
 		super(x, y);
 
 		active = true;
+		textLayout = new GlyphLayout();
 	}
 	
 	public void update(Vector2 imgSize, Vector2 point){
@@ -79,18 +91,26 @@ public class Tag extends SimpleTag{
 	}
 	
 	public void render(ShapeRenderer shapeRenderer){
-		
-		
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 		
 		if(active){
-			shapeRenderer.setColor(1, 0, 0, 1);
+			if(sharkId > 0){
+				shapeRenderer.setColor(0, 1, 0, 1);
+			}
+			else{
+				shapeRenderer.setColor(1, 0, 0, 1);
+			}
 		}
 		else{
-			shapeRenderer.setColor(1, 0, 0, 0.6f);
+			if(sharkId > 0){
+				shapeRenderer.setColor(0, 1, 0, 0.6f);
+			}
+			else{
+				shapeRenderer.setColor(1, 0, 0, 0.6f);
+			}
 		}
 		
 		shapeRenderer.rect(position.x, position.y,
@@ -109,6 +129,16 @@ public class Tag extends SimpleTag{
 		shapeRenderer.end();
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 		
+	}
+	
+	public void renderText(Batch batch, BitmapFont bitmapFont){
+		if(sharkId > 0){
+			batch.setColor(1, 0, 0, 1);
+			textLayout.setText(bitmapFont, text);
+			bitmapFont.draw(batch, text,
+					position.x, position.y);
+			batch.setColor(1, 1, 1, 1);
+		}
 	}
 	
 	public boolean contains(Vector2 point){
@@ -163,6 +193,27 @@ public class Tag extends SimpleTag{
 	public float getArea(){
 		return size.x * size.y;
 	}
+	
+	public void setSharkId(Array<String> list, String text){
+		sharkId = list.indexOf(text, false);
+		this.text = text;
+	}
+	
+	public int getSharkId(){
+		return sharkId;
+	}
+	
+//	public String getText(int id){
+//		String result = "";
+//		
+//		for(Entry<String, Integer> entry : sharkMap.entrySet()){
+//			if(Objects.equals(entry.getValue(), id)){
+//				result = entry.getKey();
+//			}
+//		}
+//		
+//		return result;
+//	}
 	
 	private float distance(Vector2 point1, Vector2 point2){
 		//sqrt((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
