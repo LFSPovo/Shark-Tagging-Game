@@ -7,8 +7,8 @@ import com.dcu.sharktag.SharkTag;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width = 1280;
-		config.height = 720;
+		config.width = 854;
+		config.height = 480;
 		config.resizable = false;
 		new LwjglApplication(new SharkTag(), config);
 	}

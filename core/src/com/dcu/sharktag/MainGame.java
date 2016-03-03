@@ -306,6 +306,7 @@ public class MainGame extends AbstractScreen{
 			@Override
 			public void tap(InputEvent event, float x, float y, int count, int button){
 				super.tap(event, x, y, count, button);
+				game.getComm().uploadTags(tags);
 				tags.clear();
 				
 				image.dispose();

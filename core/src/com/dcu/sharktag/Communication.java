@@ -5,10 +5,12 @@ import com.badlogic.gdx.Net.HttpMethods;
 import com.badlogic.gdx.Net.HttpRequest;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Array;
 import com.dcu.sharktag.ServerRequests.ImageRequest;
 import com.dcu.sharktag.ServerRequests.LoginRequest;
 import com.dcu.sharktag.ServerRequests.RegisterRequest;
 import com.dcu.sharktag.ServerRequests.ServerRequestBuilder;
+import com.dcu.sharktag.ServerRequests.TagRequest;
 
 public class Communication {
 	
@@ -17,6 +19,8 @@ public class Communication {
 	private String sessionToken = "";
 	
 	public String jsonValue = "";
+	
+	private String imageId = "";
 	
 	public void setServerURL(String url){
 		serverURL = url;
@@ -106,7 +110,7 @@ public String requestImage(){
 	
 	if(serverStatus == 1){
 		url = response.getString("URL");
-		String imageId = response.getString("imageId");
+		imageId = response.getString("imageId");
 	}
 	else{
 		String serverMessage = response.getString("message");
@@ -128,16 +132,7 @@ public Texture fetchImage(String url){
 		MyHttpResponseListener customListener = new MyHttpResponseListener();
 		Gdx.net.sendHttpRequest(request, customListener);
 		
-		while(!customListener.isResponseReceived()){
-//			Gdx.app.log("debug", "WAITING");
-//			
-//			try{
-//				wait();
-//			}
-//			catch(InterruptedException e){
-//				
-//			}
-		}
+		while(!customListener.isResponseReceived());
 		
 		imageData = customListener.getData();
 		
@@ -154,5 +149,19 @@ public Texture fetchImage(String url){
 //		}
 
 		return bucket;
+	}
+
+	public boolean uploadTags(Array<Tag> tags){
+		HttpRequest request = buildRequest("/submittags", new TagRequest(sessionToken, imageId, tags));
+		
+		MyHttpResponseListener response = new MyHttpResponseListener();
+		Gdx.net.sendHttpRequest(request, response);
+		
+		while(!response.isResponseReceived());
+		
+		int success = response.getInt("success");
+		String message = response.getString("message");
+		
+		return success == 0;
 	}
 }

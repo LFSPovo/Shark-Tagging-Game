@@ -12,4 +12,20 @@ public class SimpleTag {
 		position = new Vector2(x, y);
 		size = new Vector2(50, 50);
 	}
+	
+	public int getSharkId(){
+		return sharkId;
+	}
+	
+	public void setSharkId(int id){
+		sharkId = id;
+	}
+	
+	public Vector2 getSize(){
+		return size;
+	}
+	
+	public void setSize(Vector2 s){
+		size = s;
+	}
 }
