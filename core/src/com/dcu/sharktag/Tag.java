@@ -233,7 +233,7 @@ public class Tag extends SimpleTag{
 			t.position.x += t.size.x;
 			t.size.x *= -1;
 		}
-//		position.y = imgSize.y * imgScale - position.y;	// invert Y axis
+		t.position.y = imgSize.y * imgScale - t.position.y;	// invert Y axis
 		return t;
 	}
 	
