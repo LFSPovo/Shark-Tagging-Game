@@ -8,6 +8,8 @@ public class ServerRequestBuilder extends HttpRequestBuilder {
 	@Override
 	public HttpRequestBuilder newRequest() {
 		json.setOutputType(OutputType.json);
+		// Allow zero valued properties to be outputted
+		json.setUsePrototypes(false);
 		return super.newRequest();
 	}
 }
