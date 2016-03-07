@@ -16,6 +16,7 @@ public class Communication {
 	
 	private String serverURL = "http://povilas.ovh:8080";
 
+	private boolean firstTimer = false;
 	private String sessionToken = "";
 	
 	public String jsonValue = "";
@@ -32,6 +33,10 @@ public class Communication {
 	
 	public String getSessionToken(){
 		return sessionToken;
+	}
+	
+	public boolean isFirstTimer(){
+		return firstTimer;
 	}
 	
 	// Builds a HttpRequest object from a route and object data
@@ -58,6 +63,8 @@ public class Communication {
 		
 		int serverResponse = customListener.getInt("success");
 		String serverMessage = customListener.getString("message");
+		//TODO get firstTimer flag
+		firstTimer = true;
 		
 		if(serverResponse == 1){
 			status = "";
@@ -67,7 +74,7 @@ public class Communication {
 			status = serverMessage;
 		}
 		
-		return status;
+		return "";	//TODO revert when done with tutorial
 	}
 	
 	public String register(String username, String email, String password){

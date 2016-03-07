@@ -126,6 +126,9 @@ public class Tag extends SimpleTag{
 		shapeRenderer.rect(position.x, position.y,
 				size.x, size.y);
 		
+		shapeRenderer.end();
+		
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		if(active){
 			shapeRenderer.setColor(0, 0, 1, 1);	// Debug
 			shapeRenderer.circle(position.x, position.y, 5);
@@ -134,20 +137,19 @@ public class Tag extends SimpleTag{
 			shapeRenderer.circle(position.x + size.x, position.y + size.y, 5);
 			
 			shapeRenderer.setColor(1, 0, 1, 1);
-			shapeRenderer.rect(position.x - 5, position.y - 5, 10, 10);
+			shapeRenderer.rect(position.x - 1, position.y - 7, 0, 0, 10f, 10f, 1f, 1f, 45f);
 		}
-		shapeRenderer.end();
-		Gdx.gl.glDisable(GL20.GL_BLEND);
 		
+		Gdx.gl.glDisable(GL20.GL_BLEND);
+		shapeRenderer.end();
 	}
 	
 	public void renderText(Batch batch, BitmapFont bitmapFont){
 		if(sharkId > 0){
-			batch.setColor(1, 0, 0, 1);
+			batch.setColor(1, 1, 1, 1);
 			textLayout.setText(bitmapFont, text);
 			bitmapFont.draw(batch, text,
 					position.x, position.y);
-			batch.setColor(1, 1, 1, 1);
 		}
 	}
 	

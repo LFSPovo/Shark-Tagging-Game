@@ -1,18 +1,23 @@
 package com.dcu.sharktag;
 
+import java.awt.font.TextLayout;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 public class MainGame extends AbstractScreen{
@@ -33,7 +38,21 @@ public class MainGame extends AbstractScreen{
 	boolean touchDown = false;
 	
 	private Array<String> sharkList = new Array<String>();
-	SelectBox<String> sharkSelectBox;
+	
+	// Main interface buttons
+	private TextButton backButton;
+	private TextButton nextButton;
+	private TextButton addTagButton;
+	private SelectBox<String> sharkSelectBox;
+	
+	// Tutorial buttons and text
+	private TextButton tutorialBack;
+	private TextButton tutorialNext;
+	private Array<String> tutorialText = new Array<String>();
+	private GlyphLayout tutorialLayout;
+	
+	private int currentTutorialProgress = 0;
+	private int maxTutorialProgress = 0;
 	
 	public MainGame(SharkTag game){
 		super(game);
@@ -49,9 +68,12 @@ public class MainGame extends AbstractScreen{
 		sharkList.add("Tiger Shark");
 		sharkList.add("Blue Shark");
 		
+		buildTutorial();
+		
 		shapeRenderer = new ShapeRenderer();
 		batch = new SpriteBatch();
 		bitmapFont = new BitmapFont();
+		tutorialLayout = new GlyphLayout();
 		
 		image = fetchImage();
 		
@@ -65,6 +87,7 @@ public class MainGame extends AbstractScreen{
 		
 		clearScreen();
 		draw();
+		drawTutorial();
 		super.render(delta);
 	}
 	
@@ -107,11 +130,37 @@ public class MainGame extends AbstractScreen{
 		}
 	}
 	
+	private void drawTutorial(){
+		shapeRenderer.setProjectionMatrix(stage.getCamera().projection);
+		shapeRenderer.setTransformMatrix(stage.getCamera().view);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		shapeRenderer.setColor(0, 0, 0, 0.3f);
+		shapeRenderer.rect(50, game.WORLD_HEIGHT - 150, 300, 130);
+		shapeRenderer.end();
+		
+		batch.begin();
+		batch.setColor(1, 1, 1, 1);
+		tutorialLayout.setText(bitmapFont, tutorialText.get(currentTutorialProgress));
+		bitmapFont.draw(batch,
+				tutorialText.get(currentTutorialProgress), 55, game.WORLD_HEIGHT - 25);
+		batch.end();
+		
+		Gdx.gl.glDisable(GL20.GL_BLEND);
+	}
+	
 	private Texture fetchImage(){
 		Gdx.app.log("debug", "request image");
-		String imageUrl = game.getComm().requestImage();
-		Gdx.app.log("debug", imageUrl);
-		Texture t = game.getComm().fetchImage(imageUrl);
+		Texture t;
+		if(game.getComm().isFirstTimer()){
+			t = new Texture(Gdx.files.internal("shark-test.jpg"));
+		}
+		else{
+			String imageUrl = game.getComm().requestImage();
+			t = game.getComm().fetchImage(imageUrl);
+		}
 		
 		imageSize.x = t.getWidth();
 		imageSize.y = t.getHeight();
@@ -129,52 +178,65 @@ public class MainGame extends AbstractScreen{
 	}
 	
 	private void buildGUI(){
-		TextButton backButton = new TextButton("Menu", game.getUISkin());
+		backButton = new TextButton("Menu", game.getUISkin());
 		backButton.setPosition(10, 10);
 		stage.addActor(backButton);
 		
-		TextButton nextButton = new TextButton("Next", game.getUISkin());
+		nextButton = new TextButton("Next", game.getUISkin());
 		nextButton.setPosition(game.WORLD_WIDTH - nextButton.getWidth() - 10, 10);
+//		nextButton.setDisabled(true);
 		stage.addActor(nextButton);
 		
-		TextButton addTagButton = new TextButton("+ ", game.getUISkin());
+		addTagButton = new TextButton("+ ", game.getUISkin());
 		addTagButton.setPosition(game.WORLD_WIDTH * 3 / 4, 10);
+//		addTagButton.setDisabled(true);
 		stage.addActor(addTagButton);
 		
 		sharkSelectBox = new SelectBox<String>(game.getUISkin());
 		sharkSelectBox.setPosition(game.WORLD_WIDTH * 1 / 4, 10);
 		sharkSelectBox.setItems(sharkList);
 		sharkSelectBox.pack();
+//		sharkSelectBox.setDisabled(true);
 		stage.addActor(sharkSelectBox);
 		
-		backButton.addListener(new ActorGestureListener(){
+		backButton.addListener(new ChangeListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
-				game.setScreen(new MainMenu(game));
-				dispose();
+			public void changed(ChangeEvent event, Actor actor){
+				if(((TextButton)actor).isPressed()){
+					game.setScreen(new MainMenu(game));
+					dispose();
+				}
 			}
 		});
 		
-		nextButton.addListener(new ActorGestureListener(){
+		nextButton.addListener(new ChangeListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
-				game.getComm().uploadTags(tags);
-				tags.clear();
-				
-				image.dispose();
-				image = fetchImage();
+			public void changed(ChangeEvent event, Actor actor){
+				if(((TextButton)actor).isPressed()){
+					if(game.getComm().isFirstTimer()){
+						//TODO notify server that tutorial is done
+						game.setScreen(new MainMenu(game));
+						dispose();
+					}
+					else{
+						game.getComm().uploadTags(tags);
+						tags.clear();
+						
+						image.dispose();
+						image = fetchImage();
+					}
+				}
 			}
 		});
 		
-		addTagButton.addListener(new ActorGestureListener(){
+		addTagButton.addListener(new ChangeListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
+			public void changed(ChangeEvent event, Actor actor){
 				
-				if(!emptyTagExists()){
-					addTag(game.WORLD_WIDTH / 2 - 25, game.WORLD_HEIGHT / 2 - 25);
+				if(((TextButton)actor).isPressed()){
+					if(!emptyTagExists()){
+						addTag(game.WORLD_WIDTH / 2 - 25, game.WORLD_HEIGHT / 2 - 25);
+					}
 				}
 			}
 		});
@@ -187,16 +249,58 @@ public class MainGame extends AbstractScreen{
 			}
 		});
 		
-		sharkSelectBox.addListener(new ActorGestureListener(){
-			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-//				super.tap(event, x, y, count, button);
-				
-//				if(!emptyTagExists()){
-//					addTag(game.WORLD_WIDTH / 2 - 25, game.WORLD_HEIGHT / 2 - 25);
-//				}
-			}
-		});
+		if(game.getComm().isFirstTimer()){
+			tutorialBack = new TextButton("<<", game.getUISkin());
+			tutorialBack.setPosition(200 - 100, game.WORLD_HEIGHT - 130, Align.center);
+			tutorialBack.setColor(1, 1, 1, 0.3f);
+			tutorialBack.setTouchable(Touchable.disabled);
+			stage.addActor(tutorialBack);
+			
+			tutorialNext= new TextButton(">>", game.getUISkin());
+			tutorialNext.setPosition(200 + 100, game.WORLD_HEIGHT - 130, Align.center);
+			stage.addActor(tutorialNext);
+			
+			tutorialNext.addListener(new ChangeListener(){
+				@Override
+				public void changed(ChangeEvent event, Actor actor){
+					if(((TextButton)actor).isPressed()){
+						if(currentTutorialProgress < tutorialText.size - 1){
+							currentTutorialProgress++;
+							if(maxTutorialProgress < currentTutorialProgress){
+								maxTutorialProgress = currentTutorialProgress;
+							}
+							
+							tutorialBack.setColor(1, 1, 1, 1f);
+							tutorialBack.setTouchable(Touchable.enabled);
+							
+							if(currentTutorialProgress == tutorialText.size - 1){
+								tutorialNext.setColor(1, 1, 1, 0.3f);
+								tutorialNext.setTouchable(Touchable.disabled);
+							}
+						}
+					}
+				}
+			});
+			
+			tutorialBack.addListener(new ChangeListener(){
+				@Override
+				public void changed(ChangeEvent event, Actor actor){
+					if(((TextButton)actor).isPressed()){
+						
+						if(currentTutorialProgress > 0){
+							currentTutorialProgress--;
+							tutorialNext.setColor(1, 1, 1, 1f);
+							tutorialNext.setTouchable(Touchable.enabled);
+							
+							if(currentTutorialProgress == 0){
+								tutorialBack.setColor(1, 1, 1, 0.3f);
+								tutorialBack.setTouchable(Touchable.disabled);
+							}
+						}
+					}
+				}
+			});
+		}
 	}
 	
 	private void update(){
@@ -291,5 +395,26 @@ public class MainGame extends AbstractScreen{
 			
 			maxIndex--;
 		}
+	}
+	
+	private void buildTutorial(){
+		tutorialText.add("Hello and welcome to Shark Tagging Game.\n" +
+						"You will now learn how to play this game.");
+		tutorialText.add("The '+' button creates a new unnamed tag\n" +
+						"You can only have one unnamed tag on the\n" +
+						"screen at any time. Unnamed tags are not\n" +
+						"counted towards your score, so don't worry\n" +
+						"when you have one left");
+		tutorialText.add("Now create a new tag\n" + 
+						"Grab the pink handle to move it around\n" +
+						"Grab the green handle to resize it\n" +
+						"Try it now");
+		tutorialText.add("Once you're done with positioning the tag,\n" +
+						"use the selection box to select the correct\n" +
+						"species of shark");
+		tutorialText.add("You can add as many tags as you think\n" +
+						"necessary. You receive points for tags similar\n" +
+						"to other people's tags\nOnce you have enough tags,\n" +
+						"submit them by clicking 'Next'");
 	}
 }
