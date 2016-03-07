@@ -28,6 +28,8 @@ public class MainGame extends AbstractScreen{
 	private Texture image;
 	private Vector2 imageSize = new Vector2(0, 0);	// New size for the image if
 													// it doesn't fit the screen
+	private float imageRatio;
+	private float imageScale;
 	
 	private Vector2 touchStart = new Vector2(0, 0);
 	private Vector2 touch = new Vector2(0, 0);
@@ -115,7 +117,7 @@ public class MainGame extends AbstractScreen{
 		shapeRenderer.setTransformMatrix(stage.getCamera().view);
 		
 		for(Tag t : tags){
-			t.update(imageSize, touchPoint);
+			t.update(touchPoint);
 			t.render(shapeRenderer);
 		}
 	}
@@ -129,12 +131,17 @@ public class MainGame extends AbstractScreen{
 		imageSize.x = t.getWidth();
 		imageSize.y = t.getHeight();
 		
-		float ratio = imageSize.x / imageSize.y;
+		imageRatio = imageSize.x / imageSize.y;
 		
 		if(imageSize.y > game.WORLD_HEIGHT - 50){
 			imageSize.y = game.WORLD_HEIGHT - 50;
-			imageSize.x = imageSize.y * ratio;
+			imageSize.x = imageSize.y * imageRatio;
 		}
+		
+		imageScale = t.getWidth() / imageSize.x;
+		
+//		Gdx.app.log("debug", "SCALE X: " + t.getWidth() / imageSize.x);
+//		Gdx.app.log("debug", "SCALE Y: " + t.getHeight() / imageSize.y + " ORIGINAL: " + imageSize.y);
 		
 		// Correct image height relative to image width to fit the
 //		// image on the screen
@@ -394,7 +401,7 @@ public class MainGame extends AbstractScreen{
 		for(Tag t : tags){
 			t.setActive(false);
 		}
-		Tag newTag = new Tag(x, y);
+		Tag newTag = new Tag(x, y, imageSize, imageScale);
 		sharkSelectBox.setSelectedIndex(newTag.getSharkId());
 		tags.add(newTag);
 	}

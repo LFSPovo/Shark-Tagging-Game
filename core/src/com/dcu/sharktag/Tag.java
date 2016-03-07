@@ -23,25 +23,39 @@ public class Tag extends SimpleTag{
 	private String text = "";
 	private GlyphLayout textLayout;
 	
-	public Tag(float x, float y){
+	private Vector2 imgSize;
+	private float imgScale;
+	
+	//where the image ends on the screen
+	private float leftBoundary = 0;
+	private float rightBoundary = 0;
+	private float bottomBoundary = 0;
+	
+	public Tag(float x, float y, Vector2 imgSize, float imgScale){
 		
 		super(x, y);
 
 		active = true;
 		textLayout = new GlyphLayout();
+		this.imgSize = imgSize;
+		this.imgScale = imgScale;
+		
+		leftBoundary = (854 / 2) - (imgSize.x / 2);
+		rightBoundary = (854 / 2) + (imgSize.x / 2);
+		bottomBoundary = 50;
 	}
 	
-	public void update(Vector2 imgSize, Vector2 point){
+	public void update(Vector2 point){
 		if(active){
 			if(resizing){
-				if(point.x < (854 / 2) - (imgSize.x / 2)){
-					point.x = (854 / 2) - (imgSize.x / 2);
+				if(point.x < leftBoundary){
+					point.x = leftBoundary;
 				}
-				if(point.x > (854 / 2) + (imgSize.x / 2)){
-					point.x = (854 / 2) + (imgSize.x / 2);
+				if(point.x > rightBoundary){
+					point.x = rightBoundary;
 				}
 				
-				if(point.y < 50){
+				if(point.y < bottomBoundary){
 					point.y = 50;
 				}
 				if(point.y > 480){
@@ -201,26 +215,47 @@ public class Tag extends SimpleTag{
 	}
 	
 	public SimpleTag toSimpleTag(){
-		SimpleTag t = new SimpleTag(position.x, position.y);
-		t.size = this.size;
+		SimpleTag t = new SimpleTag(0, 0);
+		t.position = getOriginalPosition(this.position);
+		t.size = getOriginalSize(this.size);
 		t.sharkId = this.sharkId;
+		
+		// Convert so that position is in the top-left corner of the tag
+		// and size is always positive going bottom-right
+		if(t.size.y > 0){
+			t.position.y += t.size.y;
+		}
+		else{
+			t.size.y *= -1;	// change to positive
+		}
+		
+		if(t.size.x < 0){
+			t.position.x += t.size.x;
+			t.size.x *= -1;
+		}
+//		position.y = imgSize.y * imgScale - position.y;	// invert Y axis
 		return t;
 	}
-	
-//	public String getText(int id){
-//		String result = "";
-//		
-//		for(Entry<String, Integer> entry : sharkMap.entrySet()){
-//			if(Objects.equals(entry.getValue(), id)){
-//				result = entry.getKey();
-//			}
-//		}
-//		
-//		return result;
-//	}
 	
 	private float distance(Vector2 point1, Vector2 point2){
 		//sqrt((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
 		return (float)Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
+	}
+	
+	// Convert the position and size to match the original scale of the picture
+	private Vector2 getOriginalPosition(Vector2 point){
+		Vector2 tmp = new Vector2(point);
+		tmp.x = (tmp.x - leftBoundary) * imgScale;
+		tmp.y = (tmp.y - bottomBoundary) * imgScale;
+		
+		return tmp;
+	}
+	
+	private Vector2 getOriginalSize(Vector2 point){
+		Vector2 tmp = new Vector2(size);
+		tmp.x = tmp.x * imgScale;
+		tmp.y = tmp.y * imgScale;
+		
+		return tmp;
 	}
 }
