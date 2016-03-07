@@ -1,9 +1,5 @@
 package com.dcu.sharktag;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.Objects;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
