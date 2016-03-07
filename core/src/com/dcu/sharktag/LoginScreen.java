@@ -16,6 +16,8 @@ public class LoginScreen extends AbstractScreen{
 	
 	private boolean nameWasBlank = false;
 	private boolean passwordWasBlank = false;
+	
+	private boolean firstTime = true;
 
 	public LoginScreen(SharkTag game){
 		super(game);
@@ -81,6 +83,7 @@ public class LoginScreen extends AbstractScreen{
 				super.tap(event, x, y, count, button);
 				
 				if(loginUser(loginName.getText(), loginPassword.getText())){
+					Gdx.input.setOnscreenKeyboardVisible(false);
 					game.setScreen(new MainMenu(game));
 					dispose();
 				}
@@ -102,6 +105,7 @@ public class LoginScreen extends AbstractScreen{
 			String status = game.getComm().logIn(loginName.getText(), loginPassword.getText());
 			
 			if(!status.equals("")){
+				Gdx.input.setOnscreenKeyboardVisible(false);
 				Dialog dialog = new Dialog("Error", game.getUISkin());
 				dialog.text(status);
 				dialog.button("OK");
@@ -125,6 +129,7 @@ public class LoginScreen extends AbstractScreen{
 				passwordWasBlank = true;
 			}
 			
+			Gdx.input.setOnscreenKeyboardVisible(false);
 			Dialog dialog = new Dialog("Error", game.getUISkin());
 			dialog.text("Some of the fields are empty");
 			dialog.button("OK");
