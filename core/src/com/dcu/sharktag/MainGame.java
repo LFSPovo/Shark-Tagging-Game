@@ -87,7 +87,9 @@ public class MainGame extends AbstractScreen{
 		
 		clearScreen();
 		draw();
-		drawTutorial();
+		if(game.getComm().isFirstTimer()){
+			drawTutorial();
+		}
 		super.render(delta);
 	}
 	
@@ -214,7 +216,7 @@ public class MainGame extends AbstractScreen{
 			public void changed(ChangeEvent event, Actor actor){
 				if(((TextButton)actor).isPressed()){
 					if(game.getComm().isFirstTimer()){
-						//TODO notify server that tutorial is done
+						game.getComm().finishTutorial();
 						game.setScreen(new MainMenu(game));
 						dispose();
 					}

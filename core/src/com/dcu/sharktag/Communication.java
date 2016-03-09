@@ -11,6 +11,7 @@ import com.dcu.sharktag.ServerRequests.LoginRequest;
 import com.dcu.sharktag.ServerRequests.RegisterRequest;
 import com.dcu.sharktag.ServerRequests.ServerRequestBuilder;
 import com.dcu.sharktag.ServerRequests.TagRequest;
+import com.dcu.sharktag.ServerRequests.TutorialRequest;
 
 public class Communication {
 	
@@ -63,18 +64,17 @@ public class Communication {
 		
 		int serverResponse = customListener.getInt("success");
 		String serverMessage = customListener.getString("message");
-		//TODO get firstTimer flag
-		firstTimer = true;
 		
 		if(serverResponse == 1){
 			status = "";
 			sessionToken = customListener.getString("token");
+			firstTimer = !customListener.getBoolean("tutorialFinished");
 		}
 		else{
 			status = serverMessage;
 		}
 		
-		return "";	//TODO revert when done with tutorial
+		return status;
 	}
 	
 	public String register(String username, String email, String password){
@@ -102,28 +102,29 @@ public class Communication {
 		return status;
 	}
 	
-public String requestImage(){
-	
-	String url = "";
-	
-	HttpRequest request = buildRequest("/reqimage", new ImageRequest(sessionToken));
-	
-	MyHttpResponseListener response = new MyHttpResponseListener();
-	Gdx.net.sendHttpRequest(request, response);
-	
-	while(!response.isResponseReceived());
-	
-	int serverStatus = response.getInt("success");
-	
-	if(serverStatus == 1){
-		url = response.getString("URL");
-		imageId = response.getString("imageId");
+	// This method returns a URL string to the image provided by the server
+	public String requestImage(){
+		
+		String url = "";
+		
+		HttpRequest request = buildRequest("/reqimage", new ImageRequest(sessionToken));
+		
+		MyHttpResponseListener response = new MyHttpResponseListener();
+		Gdx.net.sendHttpRequest(request, response);
+		
+		while(!response.isResponseReceived());
+		
+		int serverStatus = response.getInt("success");
+		
+		if(serverStatus == 1){
+			url = response.getString("URL");
+			imageId = response.getString("imageId");
+		}
+		else{
+			String serverMessage = response.getString("message");
+		}
+		return url;
 	}
-	else{
-		String serverMessage = response.getString("message");
-	}
-	return url;
-}
 	
 public Texture fetchImage(String url){
 	
@@ -146,14 +147,9 @@ public Texture fetchImage(String url){
 		Gdx.app.log("debug", Integer.toString(imageData.length));
 
 		Pixmap pixMap = new Pixmap(imageData, 0, imageData.length);
-//		try{
-//			Pixmap pixMap = new Pixmap(new Gdx2DPixmap(imageData, 0, imageData.length, Gdx2DPixmap.GDX2D_FORMAT_RGBA8888));
+
 		bucket = new Texture(pixMap);
 		pixMap.dispose();
-//		}
-//		catch(IOException e){
-			
-//		}
 
 		return bucket;
 	}
@@ -169,6 +165,26 @@ public Texture fetchImage(String url){
 		int success = response.getInt("success");
 		String message = response.getString("message");
 		
-		return success == 0;
+		return success == 1;
+	}
+	
+	// Set a flag on the server, so that we know the player has gone through the tutorial
+	public boolean finishTutorial(){
+		Gdx.app.log("debug", sessionToken);
+		HttpRequest request = buildRequest("/finishtutorial", new TutorialRequest(sessionToken));
+		
+		MyHttpResponseListener response = new MyHttpResponseListener();
+		Gdx.net.sendHttpRequest(request, response);
+		
+		while(!response.isResponseReceived());
+		
+		int success = response.getInt("success");
+		Gdx.app.log("debug", response.getString("message"));
+		
+		if(success == 1){
+			firstTimer = false;
+		}
+		
+		return success == 1;
 	}
 }

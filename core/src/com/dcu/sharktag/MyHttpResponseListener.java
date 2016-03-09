@@ -98,52 +98,61 @@ public class MyHttpResponseListener implements HttpResponseListener {
 			return "";
 		}
 	}
+	
+	public boolean getBoolean(String key){
+		if(jsonValue != null){
+			return jsonValue.get(key).asBoolean();
+		}
+		else{
+			return false;
+		}
+	}
 
-	public int getStatus(){
-		if(jsonValue != null){
-			return jsonValue.get("success").asInt();
-		}
-		else{
-			return -1;
-		}
-	}
+//	public int getStatus(){
+//		if(jsonValue != null){
+//			return jsonValue.get("success").asInt();
+//		}
+//		else{
+//			return -1;
+//		}
+//	}
+//	
+//	public String getMessage(){
+//		if(jsonValue != null){
+//			return jsonValue.get("message").asString();
+//		}
+//		else{
+//			return "Could not reach server";
+//		}
+//	}
 	
-	public String getMessage(){
-		if(jsonValue != null){
-			return jsonValue.get("message").asString();
-		}
-		else{
-			return "Could not reach server";
-		}
-	}
-	
-	public String getSessionToken(){
-		if(jsonValue != null){
-			return jsonValue.get("token").asString();
-		}
-		else{
-			return "Could not reach server";
-		}
-	}
-	
-	public String getImageID(){
-		if(jsonValue != null){
-			return jsonValue.get("imageId").asString();
-		}
-		else{
-			return "Could not reach server";
-		}
-	}
+//	public String getSessionToken(){
+//		if(jsonValue != null){
+//			return jsonValue.get("token").asString();
+//		}
+//		else{
+//			return "Could not reach server";
+//		}
+//	}
+//	
+//	public String getImageID(){
+//		if(jsonValue != null){
+//			return jsonValue.get("imageId").asString();
+//		}
+//		else{
+//			return "Could not reach server";
+//		}
+//	}
 	
 	//URL to the image
-	public String getURL(){
-		if(jsonValue != null){
-			return jsonValue.get("URL").asString();
-		}
-		else{
-			return "Could not reach server";
-		}
-	}
+//	public String getURL(){
+//		if(jsonValue != null){
+//			return jsonValue.get("URL").asString();
+//		}
+//		else{
+//			return "Could not reach server";
+//		}
+//	}
 	
 	public int getHttpCode(){
 		return httpCode;

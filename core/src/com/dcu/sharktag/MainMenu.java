@@ -50,12 +50,7 @@ public class MainMenu extends AbstractScreen{
 			@Override
 			public void tap(InputEvent event, float x, float y, int count, int button){
 				super.tap(event, x, y, count, button);
-//				if(game.getComm().isFirstTimer()){
-//					game.setScreen(new TutorialScreen(game));
-//				}
-//				else{
-					game.setScreen(new MainGame(game));
-//				}
+				game.setScreen(new MainGame(game));
 				dispose();
 			}
 		});
