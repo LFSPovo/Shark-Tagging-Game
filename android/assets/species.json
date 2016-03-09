@@ -1,0 +1,36 @@
+{
+	"species": [
+		{
+			"name": "Select Shark",
+			"id": "0",
+		},
+		{
+			"name": "Lemon Shark",
+			"id": "1",
+		},
+		{
+			"name": "Tiger Shark",
+			"id": "2",
+		},
+		{
+			"name": "Blue Shark",
+			"id": "3",
+		},
+		{
+			"name": "Hammer Shark",
+			"id": "4",
+		},
+		{
+			"name": "Sperm Whale",
+			"id": "5",
+		},
+		{
+			"name": "Jellyfish Shark",
+			"id": "6",
+		},
+		{
+			"name": "Macrel",
+			"id": "7",
+		},
+	]
+}

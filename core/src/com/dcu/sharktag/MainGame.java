@@ -1,6 +1,7 @@
 package com.dcu.sharktag;
 
-import java.awt.font.TextLayout;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,14 +12,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
 public class MainGame extends AbstractScreen{
 	
@@ -38,6 +41,7 @@ public class MainGame extends AbstractScreen{
 	boolean touchDown = false;
 	
 	private Array<String> sharkList = new Array<String>();
+	private HashMap<String, Integer> species = new HashMap<String, Integer>();
 	
 	// Main interface buttons
 	private TextButton backButton;
@@ -63,11 +67,27 @@ public class MainGame extends AbstractScreen{
 		super.show();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		
-		sharkList.add("Choose a shark");
-		sharkList.add("Lemon Shark");
-		sharkList.add("Tiger Shark");
-		sharkList.add("Blue Shark");
-		
+//		sharkList.add("Choose a shark");
+//		sharkList.add("Lemon Shark");
+//		sharkList.add("Tiger Shark");
+//		sharkList.add("Blue Shark");
+//		sharkList.add("Choose a shark");
+//		sharkList.add("Lemon Shark");
+//		sharkList.add("Tiger Shark");
+//		sharkList.add("Blue Shark");
+//		sharkList.add("Choose a shark");
+//		sharkList.add("Lemon Shark");
+//		sharkList.add("Tiger Shark");
+//		sharkList.add("Blue Shark");
+//		sharkList.add("Choose a shark");
+//		sharkList.add("Lemon Shark");
+//		sharkList.add("Tiger Shark");
+//		sharkList.add("Blue Shark");
+//		sharkList.add("Choose a shark");
+//		sharkList.add("Lemon Shark");
+//		sharkList.add("Tiger Shark");
+//		sharkList.add("Blue Shark");
+		buildSpecies("species.json");
 		buildTutorial();
 		
 		shapeRenderer = new ShapeRenderer();
@@ -373,7 +393,7 @@ public class MainGame extends AbstractScreen{
 		if(tags.size > 0){
 			for(Tag t : tags){
 				if(t.isActive()){
-					t.setSharkId(sharkList, text);
+					t.setSharkId(species.get(text), text);
 				}
 			}
 		}
@@ -418,5 +438,19 @@ public class MainGame extends AbstractScreen{
 						"necessary. You receive points for tags similar\n" +
 						"to other people's tags\nOnce you have enough tags,\n" +
 						"submit them by clicking 'Next'");
+	}
+	
+	// Parse JSON file to populate the selection box
+	private void buildSpecies(String file){
+		Json json = new Json();
+		JsonValue mainJson = new JsonReader().parse(Gdx.files.internal("species.json"));
+		JsonValue spec = mainJson.get("species");
+		
+		for(int i = 0; i < spec.size; i++){
+			species.put(spec.get(i).getString("name"), spec.get(i).getInt("id"));
+			sharkList.add(spec.get(i).getString("name"));
+		}
+		
+		Gdx.app.log("debug", species.toString());
 	}
 }

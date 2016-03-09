@@ -206,9 +206,9 @@ public class Tag extends SimpleTag{
 		return size.x * size.y;
 	}
 	
-	public void setSharkId(Array<String> list, String text){
+	public void setSharkId(int id, String text){
 //		sharkId = list.indexOf(text, false);
-		super.setSharkId(list.indexOf(text, false));
+		super.setSharkId(id);
 		this.text = text;
 	}
 	
