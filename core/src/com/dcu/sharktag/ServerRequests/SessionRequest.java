@@ -1,10 +1,10 @@
 package com.dcu.sharktag.ServerRequests;
 
-public class TutorialRequest {
+public class SessionRequest {
 	
 	private String token;
 	
-	public TutorialRequest(String token){
+	public SessionRequest(String token){
 		this.token = token;
 	}
 }

@@ -1,9 +1,14 @@
 package com.dcu.sharktag;
 
 import com.badlogic.gdx.Gdx;
+//<<<<<<< HEAD
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+//=======
+import com.badlogic.gdx.Preferences;
+//>>>>>>> auto-login
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -18,6 +23,7 @@ public class LoginScreen extends AbstractScreen{
 	
 	private TextField loginName;
 	private TextField loginPassword;
+	private CheckBox autoLogin;
 	
 	private boolean nameWasBlank = false;
 	private boolean passwordWasBlank = false;
@@ -34,7 +40,19 @@ public class LoginScreen extends AbstractScreen{
 		
 		batch = new SpriteBatch();
 		backgroundImage = new Texture(Gdx.files.internal("back.jpg"));
+
+		boolean automatic = game.getPreferences().getBoolean("autoLogin", false);
 		
+		if(automatic){
+			String token = game.getPreferences().getString("token", "");
+			
+			if(game.getComm().autoLogin(token)){
+				game.setScreen(new MainMenu(game));
+				dispose();
+			}
+		}
+	
+		// This code is not reached when automatic login succeeds
 		buildGUI();
 	}
 	
@@ -92,12 +110,17 @@ public class LoginScreen extends AbstractScreen{
 		stage.addActor(loginPassword);
 		
 		TextButton loginButton = new TextButton("Login", game.getUISkin());
-		loginButton.setPosition(uiOriginX, uiOriginY - 130, Align.center);
+		loginButton.setPosition(uiOriginX, uiOriginY - 180, Align.center);
 		stage.addActor(loginButton);
 		
 		TextButton loginRegister = new TextButton("Register", game.getUISkin());
-		loginRegister.setPosition(uiOriginX, uiOriginY - 180, Align.center);
+		loginRegister.setPosition(uiOriginX, uiOriginY - 230, Align.center);
 		stage.addActor(loginRegister);
+		
+		autoLogin = new CheckBox("Keep me logged in", game.getUISkin());
+		autoLogin.setPosition(uiOriginX, uiOriginY - 130, Align.center);
+		autoLogin.setChecked(game.getPreferences().getBoolean("autoLOgin", false));
+		stage.addActor(autoLogin);
 		
 		loginButton.addListener(new ActorGestureListener(){
 			@Override
@@ -106,6 +129,15 @@ public class LoginScreen extends AbstractScreen{
 				
 				if(loginUser(loginName.getText(), loginPassword.getText())){
 					Gdx.input.setOnscreenKeyboardVisible(false);
+					
+					// Enable automatic logging in
+					if(autoLogin.isChecked()){
+						Preferences p = game.getPreferences();
+						p.putBoolean("autoLogin", true);
+						p.putString("token", game.getComm().getSessionToken());
+						p.flush();
+					}
+					
 					game.setScreen(new MainMenu(game));
 					dispose();
 				}

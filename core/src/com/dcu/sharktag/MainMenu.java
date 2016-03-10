@@ -63,8 +63,12 @@ public class MainMenu extends AbstractScreen{
 		creditsButton.setPosition(uiOriginX, uiOriginY - 150, Align.center);
 		stage.addActor(creditsButton);
 		
+		TextButton logoutButton = new TextButton("Log out", game.getUISkin());
+		logoutButton.setPosition(uiOriginX, uiOriginY - 200, Align.center);
+		stage.addActor(logoutButton);
+		
 		TextButton exitButton = new TextButton("Exit", game.getUISkin());
-		exitButton.setPosition(uiOriginX, uiOriginY - 200, Align.center);
+		exitButton.setPosition(uiOriginX, uiOriginY - 250, Align.center);
 		stage.addActor(exitButton);
 		
 		playButton.addListener(new ActorGestureListener(){
@@ -90,6 +94,20 @@ public class MainMenu extends AbstractScreen{
 			public void tap(InputEvent event, float x, float y, int count, int button){
 				super.tap(event, x, y, count, button);
 				game.setScreen(new CreditsScreen(game));
+				dispose();
+			}
+		});
+		
+		logoutButton.addListener(new ActorGestureListener(){
+			@Override
+			public void tap(InputEvent event, float x, float y, int count, int button){
+				super.tap(event, x, y, count, button);
+				
+				game.getPreferences().putBoolean("autoLogin", false);
+				game.getPreferences().putString("token", "");
+				game.getPreferences().flush();
+				game.getComm().logOut();
+				game.setScreen(new LoginScreen(game));
 				dispose();
 			}
 		});
