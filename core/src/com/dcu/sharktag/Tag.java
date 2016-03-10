@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-public class Tag extends SimpleTag{
+public class Tag extends SimpleTag implements Comparable{
 	
 	private boolean active;
 	
@@ -41,6 +41,19 @@ public class Tag extends SimpleTag{
 		bottomBoundary = 50;
 	}
 	
+	@Override
+	public int compareTo(Object obj) {
+		
+		if(obj.getClass() != Tag.class){
+			Gdx.app.log("debug", obj.getClass().toString());
+			return 0;
+		}
+		
+		Tag other = (Tag)obj;
+		
+		return (int)(getArea() - other.getArea());
+	}
+
 	public void update(Vector2 point){
 		if(active){
 			if(resizing){

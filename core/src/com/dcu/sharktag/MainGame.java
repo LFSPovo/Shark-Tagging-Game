@@ -402,21 +402,8 @@ public class MainGame extends AbstractScreen{
 	private void sortTags(){
 		//sort the tags by area, with smallest first
 		
-		int maxIndex = tags.size - 1;
-		
-		for(int i = 0; i < tags.size - 1; i++){
-			int index = 0;
-			
-			while(index < maxIndex){
-				if(tags.get(index).getArea() < tags.get(index + 1).getArea()){
-					Tag tmp = tags.removeIndex(index);
-					tags.insert(index + 1, tmp);
-				}
-				index++;
-			}
-			
-			maxIndex--;
-		}
+		tags.sort();
+		tags.reverse();
 	}
 	
 	private void buildTutorial(){
