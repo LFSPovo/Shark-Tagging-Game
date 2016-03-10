@@ -79,7 +79,7 @@ public class LoginScreen extends AbstractScreen{
 		
 		TextButton loginExit = new TextButton("Exit", game.getUISkin());
 		loginExit.setPosition(uiOriginX, uiOriginY - 280, Align.center);
-		stage.addActor(loginRegister);
+		stage.addActor(loginExit);
 		
 		loginButton.addListener(new ActorGestureListener(){
 			@Override
@@ -100,6 +100,14 @@ public class LoginScreen extends AbstractScreen{
 				super.tap(event, x, y, count, button);
 				game.setScreen(new RegisterScreen(game));
 				dispose();
+			}
+		});
+		
+		loginExit.addListener(new ActorGestureListener(){
+			@Override
+			public void tap(InputEvent event, float x, float y, int count, int button){
+				super.tap(event, x, y, count, button);
+				Gdx.app.exit();
 			}
 		});
 	}
