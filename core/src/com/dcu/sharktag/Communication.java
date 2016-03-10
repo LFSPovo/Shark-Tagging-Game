@@ -126,7 +126,7 @@ public class Communication {
 		return url;
 	}
 	
-public Texture fetchImage(String url){
+	public Texture fetchImage(String url){
 	
 		Gdx.app.log("debug", url);
 		
@@ -170,7 +170,6 @@ public Texture fetchImage(String url){
 	
 	// Set a flag on the server, so that we know the player has gone through the tutorial
 	public boolean finishTutorial(){
-		Gdx.app.log("debug", sessionToken);
 		HttpRequest request = buildRequest("/finishtutorial", new TutorialRequest(sessionToken));
 		
 		MyHttpResponseListener response = new MyHttpResponseListener();
@@ -186,5 +185,20 @@ public Texture fetchImage(String url){
 		}
 		
 		return success == 1;
+	}
+	
+	// Set a flag on the server, so that we know the player has gone through the tutorial
+	public String recoverPassword(String username){
+		HttpRequest request = buildRequest("/recoverpassword", new TutorialRequest(sessionToken));
+		
+		MyHttpResponseListener response = new MyHttpResponseListener();
+		Gdx.net.sendHttpRequest(request, response);
+		
+		while(!response.isResponseReceived());
+		
+		int success = response.getInt("success");
+		String message = response.getString("message");
+		
+		return message;
 	}
 }
