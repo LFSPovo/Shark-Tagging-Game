@@ -11,7 +11,7 @@ import com.dcu.sharktag.ServerRequests.LoginRequest;
 import com.dcu.sharktag.ServerRequests.RegisterRequest;
 import com.dcu.sharktag.ServerRequests.ServerRequestBuilder;
 import com.dcu.sharktag.ServerRequests.TagRequest;
-import com.dcu.sharktag.ServerRequests.TutorialRequest;
+import com.dcu.sharktag.ServerRequests.SessionRequest;
 
 public class Communication {
 	
@@ -126,7 +126,7 @@ public class Communication {
 		return url;
 	}
 	
-public Texture fetchImage(String url){
+	public Texture fetchImage(String url){
 	
 		Gdx.app.log("debug", url);
 		
@@ -170,8 +170,7 @@ public Texture fetchImage(String url){
 	
 	// Set a flag on the server, so that we know the player has gone through the tutorial
 	public boolean finishTutorial(){
-		Gdx.app.log("debug", sessionToken);
-		HttpRequest request = buildRequest("/finishtutorial", new TutorialRequest(sessionToken));
+		HttpRequest request = buildRequest("/finishtutorial", new SessionRequest(sessionToken));
 		
 		MyHttpResponseListener response = new MyHttpResponseListener();
 		Gdx.net.sendHttpRequest(request, response);
@@ -184,6 +183,21 @@ public Texture fetchImage(String url){
 		if(success == 1){
 			firstTimer = false;
 		}
+		
+		return success == 1;
+	}
+	
+	// Auto log in using the session token
+	public boolean autoLogin(String token){
+		HttpRequest request = buildRequest("/autologin", new SessionRequest(token));
+		
+		MyHttpResponseListener response = new MyHttpResponseListener();
+		Gdx.net.sendHttpRequest(request, response);
+		
+		while(!response.isResponseReceived());
+		
+		int success = response.getInt("success");
+		Gdx.app.log("debug", response.getString("message"));
 		
 		return success == 1;
 	}
