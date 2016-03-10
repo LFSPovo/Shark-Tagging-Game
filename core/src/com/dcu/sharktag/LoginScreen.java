@@ -1,12 +1,9 @@
 package com.dcu.sharktag;
 
 import com.badlogic.gdx.Gdx;
-//<<<<<<< HEAD
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-//=======
 import com.badlogic.gdx.Preferences;
-//>>>>>>> auto-login
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -122,6 +119,10 @@ public class LoginScreen extends AbstractScreen{
 		autoLogin.setChecked(game.getPreferences().getBoolean("autoLOgin", false));
 		stage.addActor(autoLogin);
 		
+		TextButton loginExit = new TextButton("Exit", game.getUISkin());
+		loginExit.setPosition(uiOriginX, uiOriginY - 280, Align.center);
+		stage.addActor(loginExit);
+
 		loginButton.addListener(new ActorGestureListener(){
 			@Override
 			public void tap(InputEvent event, float x, float y, int count, int button){
@@ -150,6 +151,14 @@ public class LoginScreen extends AbstractScreen{
 				super.tap(event, x, y, count, button);
 				game.setScreen(new RegisterScreen(game));
 				dispose();
+			}
+		});
+		
+		loginExit.addListener(new ActorGestureListener(){
+			@Override
+			public void tap(InputEvent event, float x, float y, int count, int button){
+				super.tap(event, x, y, count, button);
+				Gdx.app.exit();
 			}
 		});
 	}

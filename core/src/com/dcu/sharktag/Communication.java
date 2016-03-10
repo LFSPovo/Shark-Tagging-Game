@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.dcu.sharktag.ServerRequests.ImageRequest;
 import com.dcu.sharktag.ServerRequests.LoginRequest;
+import com.dcu.sharktag.ServerRequests.RecoveryRequest;
 import com.dcu.sharktag.ServerRequests.RegisterRequest;
 import com.dcu.sharktag.ServerRequests.ServerRequestBuilder;
 import com.dcu.sharktag.ServerRequests.TagRequest;
@@ -223,5 +224,20 @@ public class Communication {
 		}
 		
 		return success == 1;
+	}
+
+	// Set a flag on the server, so that we know the player has gone through the tutorial
+	public String recoverPassword(String username){
+		HttpRequest request = buildRequest("/recoverpassword", new RecoveryRequest(username));
+		
+		MyHttpResponseListener response = new MyHttpResponseListener();
+		Gdx.net.sendHttpRequest(request, response);
+		
+		while(!response.isResponseReceived());
+		
+		int success = response.getInt("success");
+		String message = response.getString("message");
+		
+		return message;
 	}
 }

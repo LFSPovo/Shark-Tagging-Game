@@ -68,22 +68,22 @@ public class RegisterScreen extends AbstractScreen{
 		
 		//EMAIL
 		Label emailLabel = new Label("Email", game.getUISkin());
-		emailLabel.setPosition(game.WORLD_WIDTH / 4, uiOriginY - 50, Align.center);
+		emailLabel.setPosition(game.WORLD_WIDTH / 4 * 3, uiOriginY + 30, Align.center);
 		stage.addActor(emailLabel);
 		email = new TextField("", game.getUISkin());
 		email.setWidth(game.WORLD_WIDTH / 2.2f);
-		email.setPosition(game.WORLD_WIDTH / 4, uiOriginY - 80, Align.center);
+		email.setPosition(game.WORLD_WIDTH / 4 * 3, uiOriginY, Align.center);
 		stage.addActor(email);
 		
 		//PASSWORD
 		Label passwordLabel = new Label("Password", game.getUISkin());
-		passwordLabel.setPosition(game.WORLD_WIDTH / 4 * 3, uiOriginY + 30, Align.center);
+		passwordLabel.setPosition(game.WORLD_WIDTH / 4, uiOriginY - 50, Align.center);
 		stage.addActor(passwordLabel);
 		password = new TextField("", game.getUISkin());
 		password.setPasswordCharacter('*');
 		password.setPasswordMode(true);
 		password.setWidth(game.WORLD_WIDTH / 2.2f);
-		password.setPosition(game.WORLD_WIDTH / 4 * 3, uiOriginY, Align.center);
+		password.setPosition(game.WORLD_WIDTH / 4, uiOriginY - 80, Align.center);
 		stage.addActor(password);
 		
 		//REPEAT PASSWORD
