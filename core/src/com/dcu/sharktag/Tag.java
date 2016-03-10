@@ -220,9 +220,12 @@ public class Tag extends SimpleTag implements Comparable{
 	}
 	
 	public void setSharkId(int id, String text){
-//		sharkId = list.indexOf(text, false);
 		super.setSharkId(id);
 		this.text = text;
+	}
+	
+	public String getText(){
+		return text;
 	}
 	
 	public SimpleTag toSimpleTag(){

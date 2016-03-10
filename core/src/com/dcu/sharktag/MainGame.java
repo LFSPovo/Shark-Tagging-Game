@@ -347,7 +347,8 @@ public class MainGame extends AbstractScreen{
 							}
 							
 							t.setActive(true);
-							sharkSelectBox.setSelectedIndex(t.getSharkId());
+							
+							sharkSelectBox.setSelected(t.getText());
 						}
 						else{
 							t.setActive(false);
