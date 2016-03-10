@@ -199,6 +199,29 @@ public class Communication {
 		int success = response.getInt("success");
 		Gdx.app.log("debug", response.getString("message"));
 		
+		if(success == 1){
+			sessionToken = token;
+		}
+		
+		return success == 1;
+	}
+	
+	// Log out and remove the session token from the database
+	public boolean logOut(){
+		HttpRequest request = buildRequest("/logout", new SessionRequest(sessionToken));
+		
+		MyHttpResponseListener response = new MyHttpResponseListener();
+		Gdx.net.sendHttpRequest(request, response);
+		
+		while(!response.isResponseReceived());
+		
+		int success = response.getInt("success");
+		Gdx.app.log("debug", response.getString("message"));
+		
+		if(success == 1){
+			sessionToken = "";
+		}
+		
 		return success == 1;
 	}
 }
