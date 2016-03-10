@@ -77,6 +77,10 @@ public class LoginScreen extends AbstractScreen{
 		loginRegister.setPosition(uiOriginX, uiOriginY - 180, Align.center);
 		stage.addActor(loginRegister);
 		
+		TextButton loginExit = new TextButton("Exit", game.getUISkin());
+		loginExit.setPosition(uiOriginX, uiOriginY - 280, Align.center);
+		stage.addActor(loginRegister);
+		
 		loginButton.addListener(new ActorGestureListener(){
 			@Override
 			public void tap(InputEvent event, float x, float y, int count, int button){
