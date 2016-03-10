@@ -446,11 +446,16 @@ public class MainGame extends AbstractScreen{
 		JsonValue mainJson = new JsonReader().parse(Gdx.files.internal("species.json"));
 		JsonValue spec = mainJson.get("species");
 		
-		for(int i = 0; i < spec.size; i++){
+		// Insert all species into the list, but ignore the first entry
+		for(int i = 1; i < spec.size; i++){
 			species.put(spec.get(i).getString("name"), spec.get(i).getInt("id"));
 			sharkList.add(spec.get(i).getString("name"));
 		}
 		
-		Gdx.app.log("debug", species.toString());
+		sharkList.sort();
+		
+		// The first entry must not be sorted, but be on the top of the list
+		species.put(spec.get(0).getString("name"), spec.get(0).getInt("id"));
+		sharkList.insert(0, spec.get(0).getString("name"));;
 	}
 }
