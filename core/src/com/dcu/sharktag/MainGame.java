@@ -12,9 +12,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -206,59 +208,52 @@ public class MainGame extends AbstractScreen{
 		
 		nextButton = new TextButton("Next", game.getUISkin());
 		nextButton.setPosition(game.WORLD_WIDTH - nextButton.getWidth() - 10, 10);
-//		nextButton.setDisabled(true);
 		stage.addActor(nextButton);
 		
 		addTagButton = new TextButton("+ ", game.getUISkin());
 		addTagButton.setPosition(game.WORLD_WIDTH * 3 / 4, 10);
-//		addTagButton.setDisabled(true);
 		stage.addActor(addTagButton);
 		
 		sharkSelectBox = new SelectBox<String>(game.getUISkin());
 		sharkSelectBox.setPosition(game.WORLD_WIDTH * 1 / 4, 10);
 		sharkSelectBox.setItems(sharkList);
 		sharkSelectBox.pack();
-//		sharkSelectBox.setDisabled(true);
 		stage.addActor(sharkSelectBox);
-		
-		backButton.addListener(new ChangeListener(){
+	
+		backButton.addListener(new ActorGestureListener(){
 			@Override
-			public void changed(ChangeEvent event, Actor actor){
-				if(((TextButton)actor).isPressed()){
+			public void tap(InputEvent event, float x, float y, int count, int button){
+				super.tap(event, x, y, count, button);
+				game.setScreen(new MainMenu(game));
+				dispose();
+			}
+		});
+	
+		nextButton.addListener(new ActorGestureListener(){
+			@Override
+			public void tap(InputEvent event, float x, float y, int count, int button){
+				super.tap(event, x, y, count, button);
+				if(game.getComm().isFirstTimer()){
+					game.getComm().finishTutorial();
 					game.setScreen(new MainMenu(game));
 					dispose();
 				}
-			}
-		});
-		
-		nextButton.addListener(new ChangeListener(){
-			@Override
-			public void changed(ChangeEvent event, Actor actor){
-				if(((TextButton)actor).isPressed()){
-					if(game.getComm().isFirstTimer()){
-						game.getComm().finishTutorial();
-						game.setScreen(new MainMenu(game));
-						dispose();
-					}
-					else{
-						game.getComm().uploadTags(tags);
-						tags.clear();
-						
-						image.dispose();
-						image = fetchImage();
-					}
+				else{
+					game.getComm().uploadTags(tags);
+					tags.clear();
+					
+					image.dispose();
+					image = fetchImage();
 				}
 			}
 		});
-		
-		addTagButton.addListener(new ChangeListener(){
+
+		addTagButton.addListener(new ActorGestureListener(){
 			@Override
-			public void changed(ChangeEvent event, Actor actor){
-				
-				if(((TextButton)actor).isPressed()){
-					if(!emptyTagExists()){
-						addTag(game.WORLD_WIDTH / 2 - 25, game.WORLD_HEIGHT / 2 - 25);
-					}
+			public void tap(InputEvent event, float x, float y, int count, int button){
+				super.tap(event, x, y, count, button);
+				if(!emptyTagExists()){
+					addTag(game.WORLD_WIDTH / 2 - 25, game.WORLD_HEIGHT / 2 - 25);
 				}
 			}
 		});
@@ -282,42 +277,39 @@ public class MainGame extends AbstractScreen{
 			tutorialNext.setPosition(200 + 100, game.WORLD_HEIGHT - 130, Align.center);
 			stage.addActor(tutorialNext);
 			
-			tutorialNext.addListener(new ChangeListener(){
+			tutorialNext.addListener(new ActorGestureListener(){
 				@Override
-				public void changed(ChangeEvent event, Actor actor){
-					if(((TextButton)actor).isPressed()){
-						if(currentTutorialProgress < tutorialText.size - 1){
-							currentTutorialProgress++;
-							if(maxTutorialProgress < currentTutorialProgress){
-								maxTutorialProgress = currentTutorialProgress;
-							}
-							
-							tutorialBack.setColor(1, 1, 1, 1f);
-							tutorialBack.setTouchable(Touchable.enabled);
-							
-							if(currentTutorialProgress == tutorialText.size - 1){
-								tutorialNext.setColor(1, 1, 1, 0.3f);
-								tutorialNext.setTouchable(Touchable.disabled);
-							}
+				public void tap(InputEvent event, float x, float y, int count, int button){
+					super.tap(event, x, y, count, button);
+					if(currentTutorialProgress < tutorialText.size - 1){
+						currentTutorialProgress++;
+						if(maxTutorialProgress < currentTutorialProgress){
+							maxTutorialProgress = currentTutorialProgress;
+						}
+						
+						tutorialBack.setColor(1, 1, 1, 1f);
+						tutorialBack.setTouchable(Touchable.enabled);
+						
+						if(currentTutorialProgress == tutorialText.size - 1){
+							tutorialNext.setColor(1, 1, 1, 0.3f);
+							tutorialNext.setTouchable(Touchable.disabled);
 						}
 					}
 				}
 			});
 			
-			tutorialBack.addListener(new ChangeListener(){
+			tutorialBack.addListener(new ActorGestureListener(){
 				@Override
-				public void changed(ChangeEvent event, Actor actor){
-					if(((TextButton)actor).isPressed()){
+				public void tap(InputEvent event, float x, float y, int count, int button){
+					super.tap(event, x, y, count, button);
+					if(currentTutorialProgress > 0){
+						currentTutorialProgress--;
+						tutorialNext.setColor(1, 1, 1, 1f);
+						tutorialNext.setTouchable(Touchable.enabled);
 						
-						if(currentTutorialProgress > 0){
-							currentTutorialProgress--;
-							tutorialNext.setColor(1, 1, 1, 1f);
-							tutorialNext.setTouchable(Touchable.enabled);
-							
-							if(currentTutorialProgress == 0){
-								tutorialBack.setColor(1, 1, 1, 0.3f);
-								tutorialBack.setTouchable(Touchable.disabled);
-							}
+						if(currentTutorialProgress == 0){
+							tutorialBack.setColor(1, 1, 1, 0.3f);
+							tutorialBack.setTouchable(Touchable.disabled);
 						}
 					}
 				}
