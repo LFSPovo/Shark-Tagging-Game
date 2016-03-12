@@ -9,8 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Align;
 
 public class CreditsScreen extends AbstractScreen{
-	
-	private SpriteBatch batch;
 	private Texture credits;
 	
 	public CreditsScreen(SharkTag game){
@@ -20,8 +18,7 @@ public class CreditsScreen extends AbstractScreen{
 	@Override
 	public void show(){
 		super.show();
-		
-		batch = new SpriteBatch();
+
 		credits = new Texture(Gdx.files.internal("ui/credits.png"));
 		
 		buildGUI();
@@ -57,11 +54,10 @@ public class CreditsScreen extends AbstractScreen{
 	}
 	
 	private void draw(){
-		batch.setProjectionMatrix(stage.getCamera().projection);
-		batch.setTransformMatrix(stage.getCamera().view);
+		game.drawBackground(stage);
 		
-		batch.begin();
-		batch.draw(credits, 0, 0);
-		batch.end();
+		game.getBatch().begin();
+		game.getBatch().draw(credits, 0, 0);
+		game.getBatch().end();
 	}
 }

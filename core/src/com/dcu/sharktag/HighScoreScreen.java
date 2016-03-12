@@ -20,6 +20,7 @@ public class HighScoreScreen extends AbstractScreen{
 	@Override
 	public void render(float delta){
 		clearScreen();
+		game.drawBackground(stage);
 		super.render(delta);
 	}
 	

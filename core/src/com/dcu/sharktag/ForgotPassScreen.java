@@ -17,9 +17,6 @@ public class ForgotPassScreen extends AbstractScreen {
 	
 	private Label codeLabel;
 	private TextField code;
-	
-	private SpriteBatch batch;
-	private Texture backgroundImage;
 
 	public ForgotPassScreen(SharkTag game) {
 		super(game);
@@ -29,9 +26,6 @@ public class ForgotPassScreen extends AbstractScreen {
 	public void show(){
 		super.show();
 		
-		batch = new SpriteBatch();
-		backgroundImage = new Texture(Gdx.files.internal("back.jpg"));
-		
 		buildGUI();
 	}
 	
@@ -39,11 +33,7 @@ public class ForgotPassScreen extends AbstractScreen {
 	public void render(float delta){
 		clearScreen();
 		
-		batch.setProjectionMatrix(stage.getCamera().projection);
-		batch.setTransformMatrix(stage.getCamera().view);
-		batch.begin();
-		batch.draw(backgroundImage, 0, 0, game.WORLD_WIDTH, game.WORLD_HEIGHT);
-		batch.end();
+		game.drawBackground(stage);
 		
 		super.render(delta);
 	}

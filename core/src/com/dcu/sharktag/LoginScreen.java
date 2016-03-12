@@ -15,9 +15,6 @@ import com.badlogic.gdx.utils.Align;
 
 public class LoginScreen extends AbstractScreen{
 	
-	private SpriteBatch batch;
-	private Texture backgroundImage;
-	
 	private TextField loginName;
 	private TextField loginPassword;
 	private CheckBox autoLogin;
@@ -34,9 +31,6 @@ public class LoginScreen extends AbstractScreen{
 	@Override
 	public void show(){
 		super.show();
-		
-		batch = new SpriteBatch();
-		backgroundImage = new Texture(Gdx.files.internal("back.jpg"));
 
 		boolean automatic = game.getPreferences().getBoolean("autoLogin", false);
 		
@@ -59,19 +53,9 @@ public class LoginScreen extends AbstractScreen{
 		
 		clearScreen();
 		
-		batch.setProjectionMatrix(stage.getCamera().projection);
-		batch.setTransformMatrix(stage.getCamera().view);
-		batch.begin();
-		batch.draw(backgroundImage, 0, 0, game.WORLD_WIDTH, game.WORLD_HEIGHT);
-		batch.end();
+		game.drawBackground(stage);
 		
 		super.render(delta);
-	}
-	
-	@Override
-	public void dispose(){
-		super.dispose();
-		backgroundImage.dispose();
 	}
 	
 	private void update(){

@@ -10,9 +10,6 @@ import com.badlogic.gdx.utils.Align;
 
 public class MainMenu extends AbstractScreen{
 	
-	private SpriteBatch batch;
-	private Texture backgroundImage;
-	
 	public MainMenu(SharkTag game){
 		super(game);
 	}
@@ -21,9 +18,6 @@ public class MainMenu extends AbstractScreen{
 	public void show(){
 		super.show();
 		
-		batch = new SpriteBatch();
-		backgroundImage = new Texture(Gdx.files.internal("back.jpg"));
-		
 		buildGUI();
 	}
 	
@@ -31,19 +25,9 @@ public class MainMenu extends AbstractScreen{
 	public void render(float delta){
 		clearScreen();
 		
-		batch.setProjectionMatrix(stage.getCamera().projection);
-		batch.setTransformMatrix(stage.getCamera().view);
-		batch.begin();
-		batch.draw(backgroundImage, 0, 0, game.WORLD_WIDTH, game.WORLD_HEIGHT);
-		batch.end();
+		game.drawBackground(stage);
 		
 		super.render(delta);
-	}
-	
-	@Override
-	public void dispose(){
-		super.dispose();
-		backgroundImage.dispose();
 	}
 	
 	private void buildGUI(){

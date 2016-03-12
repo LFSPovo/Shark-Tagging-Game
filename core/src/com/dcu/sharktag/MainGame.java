@@ -68,32 +68,12 @@ public class MainGame extends AbstractScreen{
 	public void show(){
 		super.show();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
-		
-//		sharkList.add("Choose a shark");
-//		sharkList.add("Lemon Shark");
-//		sharkList.add("Tiger Shark");
-//		sharkList.add("Blue Shark");
-//		sharkList.add("Choose a shark");
-//		sharkList.add("Lemon Shark");
-//		sharkList.add("Tiger Shark");
-//		sharkList.add("Blue Shark");
-//		sharkList.add("Choose a shark");
-//		sharkList.add("Lemon Shark");
-//		sharkList.add("Tiger Shark");
-//		sharkList.add("Blue Shark");
-//		sharkList.add("Choose a shark");
-//		sharkList.add("Lemon Shark");
-//		sharkList.add("Tiger Shark");
-//		sharkList.add("Blue Shark");
-//		sharkList.add("Choose a shark");
-//		sharkList.add("Lemon Shark");
-//		sharkList.add("Tiger Shark");
-//		sharkList.add("Blue Shark");
+
 		buildSpecies("species.json");
 		buildTutorial();
 		
-		shapeRenderer = new ShapeRenderer();
-		batch = new SpriteBatch();
+		shapeRenderer = game.getShapeRenderer();
+		batch = game.getBatch();
 		bitmapFont = new BitmapFont();
 		tutorialLayout = new GlyphLayout();
 		
@@ -104,7 +84,6 @@ public class MainGame extends AbstractScreen{
 	
 	@Override
 	public void render(float delta){
-//		updateTagging();
 		update();
 		
 		clearScreen();
@@ -131,8 +110,8 @@ public class MainGame extends AbstractScreen{
 				
 		if(image != null){
 			batch.draw(image,
-					(game.WORLD_WIDTH - imageSize.x) / 2,	//if it's smaller than the screen,
-					game.WORLD_HEIGHT - imageSize.y,
+					(game.WORLD_WIDTH - imageSize.x) / 2,	//if it's smaller 
+					game.WORLD_HEIGHT - imageSize.y,		//than the screen
 					imageSize.x, imageSize.y);
 		}
 		for(Tag t : tags){
@@ -157,6 +136,8 @@ public class MainGame extends AbstractScreen{
 	private void drawTutorial(){
 		shapeRenderer.setProjectionMatrix(stage.getCamera().projection);
 		shapeRenderer.setTransformMatrix(stage.getCamera().view);
+		
+		// Needed in order to draw with transparency
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		
@@ -167,7 +148,8 @@ public class MainGame extends AbstractScreen{
 		
 		batch.begin();
 		batch.setColor(1, 1, 1, 1);
-		tutorialLayout.setText(bitmapFont, tutorialText.get(currentTutorialProgress));
+		tutorialLayout.setText(bitmapFont,
+				tutorialText.get(currentTutorialProgress));
 		bitmapFont.draw(batch,
 				tutorialText.get(currentTutorialProgress), 55, game.WORLD_HEIGHT - 25);
 		batch.end();
@@ -176,7 +158,6 @@ public class MainGame extends AbstractScreen{
 	}
 	
 	private Texture fetchImage(){
-		Gdx.app.log("debug", "request image");
 		Texture t;
 		if(game.getComm().isFirstTimer()){
 			t = new Texture(Gdx.files.internal("shark-test.jpg"));
@@ -186,6 +167,7 @@ public class MainGame extends AbstractScreen{
 			t = game.getComm().fetchImage(imageUrl);
 		}
 		
+		// Make the image fit the screen while keeping its aspect ratio
 		imageSize.x = t.getWidth();
 		imageSize.y = t.getHeight();
 		
@@ -207,7 +189,8 @@ public class MainGame extends AbstractScreen{
 		stage.addActor(backButton);
 		
 		nextButton = new TextButton("Next", game.getUISkin());
-		nextButton.setPosition(game.WORLD_WIDTH - nextButton.getWidth() - 10, 10);
+		nextButton.setPosition(
+				game.WORLD_WIDTH - nextButton.getWidth() - 10, 10);
 		stage.addActor(nextButton);
 		
 		addTagButton = new TextButton("+ ", game.getUISkin());
@@ -394,7 +377,6 @@ public class MainGame extends AbstractScreen{
 	
 	private void sortTags(){
 		//sort the tags by area, with smallest first
-		
 		tags.sort();
 		tags.reverse();
 	}
