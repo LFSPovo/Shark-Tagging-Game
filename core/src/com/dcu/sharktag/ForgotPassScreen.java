@@ -1,8 +1,11 @@
 package com.dcu.sharktag;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -11,6 +14,12 @@ import com.badlogic.gdx.utils.Align;
 public class ForgotPassScreen extends AbstractScreen {
 	
 	private TextField username;
+	
+	private Label codeLabel;
+	private TextField code;
+	
+	private SpriteBatch batch;
+	private Texture backgroundImage;
 
 	public ForgotPassScreen(SharkTag game) {
 		super(game);
@@ -20,21 +29,51 @@ public class ForgotPassScreen extends AbstractScreen {
 	public void show(){
 		super.show();
 		
+		batch = new SpriteBatch();
+		backgroundImage = new Texture(Gdx.files.internal("back.jpg"));
+		
 		buildGUI();
+	}
+	
+	@Override
+	public void render(float delta){
+		clearScreen();
+		
+		batch.setProjectionMatrix(stage.getCamera().projection);
+		batch.setTransformMatrix(stage.getCamera().view);
+		batch.begin();
+		batch.draw(backgroundImage, 0, 0, game.WORLD_WIDTH, game.WORLD_HEIGHT);
+		batch.end();
+		
+		super.render(delta);
 	}
 	
 	private void buildGUI(){
 		
-		username = new TextField("Username / Email", game.getUISkin());
+		Label usernameLabel = new Label("Username / Email", game.getUISkin());
+		usernameLabel.setPosition(uiOriginX, uiOriginY + 30, Align.center);
+		username = new TextField("", game.getUISkin());
+		stage.addActor(usernameLabel);
+		username.setWidth(game.WORLD_WIDTH / 2.2f);
 		username.setPosition(uiOriginX, uiOriginY, Align.center);
 		stage.addActor(username);
 		
+		codeLabel = new Label("Verification Code", game.getUISkin());
+		codeLabel.setPosition(uiOriginX, uiOriginY - 50, Align.center);
+		codeLabel.setVisible(false);
+		stage.addActor(codeLabel);
+		code = new TextField("", game.getUISkin());
+		code.setWidth(game.WORLD_WIDTH / 2.2f);
+		code.setPosition(uiOriginX, uiOriginY - 80, Align.center);
+		code.setVisible(false);
+		stage.addActor(code);
+		
 		TextButton submit = new TextButton("Submit", game.getUISkin());
-		submit.setPosition(uiOriginX, uiOriginY - 100, Align.center);
+		submit.setPosition(uiOriginX, uiOriginY - 130, Align.center);
 		stage.addActor(submit);
 		
 		TextButton cancel = new TextButton("Back", game.getUISkin());
-		cancel.setPosition(uiOriginX, uiOriginY - 150, Align.center);
+		cancel.setPosition(uiOriginX, uiOriginY - 180, Align.center);
 		stage.addActor(cancel);
 		
 		submit.addListener(new ChangeListener(){

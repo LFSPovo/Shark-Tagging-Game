@@ -5,7 +5,7 @@
 			"id": "0",
 		},
 		{
-			"name": "Lemon Shark",
+			"name": "Grey Reef Shark",
 			"id": "1",
 		},
 		{
@@ -13,24 +13,20 @@
 			"id": "2",
 		},
 		{
-			"name": "Blue Shark",
+			"name": "Lemon Shark",
 			"id": "3",
 		},
 		{
-			"name": "Hammer Shark",
+			"name": "Bull Shark",
 			"id": "4",
 		},
 		{
-			"name": "Diver",
+			"name": "Great Hammerhead Shark",
 			"id": "5",
 		},
 		{
-			"name": "Jellyfish",
+			"name": "White Shark",
 			"id": "6",
-		},
-		{
-			"name": "Mackerel",
-			"id": "7",
 		},
 	]
 }

@@ -63,16 +63,24 @@ public class Communication {
 		
 		while(!customListener.isResponseReceived());
 		
-		int serverResponse = customListener.getInt("success");
-		String serverMessage = customListener.getString("message");
+		int serverResponse;
+		String serverMessage;
 		
-		if(serverResponse == 1){
-			status = "";
-			sessionToken = customListener.getString("token");
-			firstTimer = !customListener.getBoolean("tutorialFinished");
+		if(customListener.getHttpCode() == 200){
+			serverResponse = customListener.getInt("success");
+			serverMessage = customListener.getString("message");
+			
+			if(serverResponse == 1){
+				status = "";
+				sessionToken = customListener.getString("token");
+				firstTimer = !customListener.getBoolean("tutorialFinished");
+			}
+			else{
+				status = serverMessage;
+			}
 		}
 		else{
-			status = serverMessage;
+			status = "Server could not be reached";
 		}
 		
 		return status;
@@ -90,14 +98,22 @@ public class Communication {
 		
 		while(!customListener.isResponseReceived());
 		
-		int serverResponse = customListener.getInt("success");
-		String serverMessage = customListener.getString("message");
+		int serverResponse;
+		String serverMessage;
 		
-		if(serverResponse == 1){
-			status = "";
+		if(customListener.getHttpCode() == 200){
+			serverResponse = customListener.getInt("success");
+			serverMessage = customListener.getString("message");
+			
+			if(serverResponse == 1){
+				status = "";
+			}
+			else{
+				status = serverMessage;
+			}
 		}
 		else{
-			status = serverMessage;
+			status = "Server could not be reached";
 		}
 		
 		return status;
@@ -235,9 +251,16 @@ public class Communication {
 		
 		while(!response.isResponseReceived());
 		
-		int success = response.getInt("success");
-		String message = response.getString("message");
+		int success;
+		String message;
 		
+		if(response.getHttpCode() == 200){
+			success = response.getInt("success");
+			message = response.getString("message");
+		}
+		else{
+			message = "Server could not be reached";
+		}
 		return message;
 	}
 }

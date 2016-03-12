@@ -106,6 +106,11 @@ public class LoginScreen extends AbstractScreen{
 		loginPassword.setPosition(uiOriginX, uiOriginY - 80, Align.center);
 		stage.addActor(loginPassword);
 		
+		autoLogin = new CheckBox("Keep me logged in", game.getUISkin());
+		autoLogin.setPosition(uiOriginX, uiOriginY - 130, Align.center);
+		autoLogin.setChecked(game.getPreferences().getBoolean("autoLOgin", false));
+		stage.addActor(autoLogin);
+		
 		TextButton loginButton = new TextButton("Login", game.getUISkin());
 		loginButton.setPosition(uiOriginX, uiOriginY - 180, Align.center);
 		stage.addActor(loginButton);
@@ -114,13 +119,12 @@ public class LoginScreen extends AbstractScreen{
 		loginRegister.setPosition(uiOriginX, uiOriginY - 230, Align.center);
 		stage.addActor(loginRegister);
 		
-		autoLogin = new CheckBox("Keep me logged in", game.getUISkin());
-		autoLogin.setPosition(uiOriginX, uiOriginY - 130, Align.center);
-		autoLogin.setChecked(game.getPreferences().getBoolean("autoLOgin", false));
-		stage.addActor(autoLogin);
+		TextButton recoverPassword = new TextButton("Forgot Password", game.getUISkin());
+		recoverPassword.setPosition(uiOriginX, uiOriginY - 280, Align.center);
+		stage.addActor(recoverPassword);
 		
 		TextButton loginExit = new TextButton("Exit", game.getUISkin());
-		loginExit.setPosition(uiOriginX, uiOriginY - 280, Align.center);
+		loginExit.setPosition(uiOriginX, uiOriginY - 330, Align.center);
 		stage.addActor(loginExit);
 
 		loginButton.addListener(new ActorGestureListener(){
@@ -151,6 +155,14 @@ public class LoginScreen extends AbstractScreen{
 				super.tap(event, x, y, count, button);
 				game.setScreen(new RegisterScreen(game));
 				dispose();
+			}
+		});
+		
+		recoverPassword.addListener(new ActorGestureListener(){
+			@Override
+			public void tap(InputEvent event, float x, float y, int count, int button){
+				super.tap(event, x, y, count, button);
+				game.setScreen(new ForgotPassScreen(game));
 			}
 		});
 		
