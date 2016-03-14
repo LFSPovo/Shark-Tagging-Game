@@ -25,6 +25,9 @@ public class Communication {
 	
 	private String imageId = "";
 	
+	//A temporary variable for storing server's messages
+	private String tmpString = "";
+	
 	public void setServerURL(String url){
 		serverURL = url;
 	}
@@ -39,6 +42,10 @@ public class Communication {
 	
 	public boolean isFirstTimer(){
 		return firstTimer;
+	}
+	
+	public String getTmpString(){
+		return tmpString;
 	}
 	
 	// Builds a HttpRequest object from a route and object data
@@ -242,9 +249,33 @@ public class Communication {
 		return success == 1;
 	}
 
-	// Set a flag on the server, so that we know the player has gone through the tutorial
+	// Request a recovery code from the server
 	public String recoverPassword(String username){
 		HttpRequest request = buildRequest("/recoverpassword", new RecoveryRequest(username));
+		
+		MyHttpResponseListener response = new MyHttpResponseListener();
+		Gdx.net.sendHttpRequest(request, response);
+		
+		while(!response.isResponseReceived());
+		
+		int success;
+		String message;
+		
+		if(response.getHttpCode() == 200){
+			success = response.getInt("success");
+			message = response.getString("message");
+			tmpString = response.getString("username");
+		}
+		else{
+			message = "Server could not be reached";
+		}
+		return message;
+	}
+	
+	// Use the code to change the password
+	public String recoverPasswordChange(String username, String pass, String code){
+		HttpRequest request = buildRequest("/recoverpasswordchange",
+				new RecoveryRequest(username, code, pass));
 		
 		MyHttpResponseListener response = new MyHttpResponseListener();
 		Gdx.net.sendHttpRequest(request, response);
