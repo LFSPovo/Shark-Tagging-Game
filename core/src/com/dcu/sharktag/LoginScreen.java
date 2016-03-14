@@ -1,8 +1,6 @@
 package com.dcu.sharktag;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
@@ -21,8 +19,6 @@ public class LoginScreen extends AbstractScreen{
 	
 	private boolean nameWasBlank = false;
 	private boolean passwordWasBlank = false;
-	
-	private boolean firstTime = true;
 
 	public LoginScreen(SharkTag game){
 		super(game);
