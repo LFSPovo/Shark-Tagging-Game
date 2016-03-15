@@ -36,10 +36,10 @@ public class MainMenu extends AbstractScreen{
 		playButton.setPosition(uiOriginX, uiOriginY, Align.center);
 		stage.addActor(playButton);
 		
-		TextButton optionsButton = new TextButton("Options", game.getUISkin());
-		optionsButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
-		optionsButton.setPosition(uiOriginX, uiOriginY - 50, Align.center);
-		stage.addActor(optionsButton);
+		TextButton tutorialButton = new TextButton("Tutorial", game.getUISkin());
+		tutorialButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
+		tutorialButton.setPosition(uiOriginX, uiOriginY - 50, Align.center);
+		stage.addActor(tutorialButton);
 		
 		TextButton highscoreButton = new TextButton("Highscores", game.getUISkin());
 		highscoreButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
@@ -84,6 +84,16 @@ public class MainMenu extends AbstractScreen{
 			public void tap(InputEvent event, float x, float y, int count, int button){
 				super.tap(event, x, y, count, button);
 				game.setScreen(new CreditsScreen(game));
+				dispose();
+			}
+		});
+		
+		tutorialButton.addListener(new ActorGestureListener(){
+			@Override
+			public void tap(InputEvent event, float x, float y, int count, int button){
+				super.tap(event, x, y, count, button);
+				game.getComm().setFirstTimer(true);
+				game.setScreen(new MainGame(game));
 				dispose();
 			}
 		});

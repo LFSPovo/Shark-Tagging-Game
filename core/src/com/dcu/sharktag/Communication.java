@@ -46,6 +46,10 @@ public class Communication {
 		return firstTimer;
 	}
 	
+	public void setFirstTimer(boolean flag){
+		firstTimer = flag;
+	}
+	
 	public String getTmpString(){
 		return tmpString;
 	}
