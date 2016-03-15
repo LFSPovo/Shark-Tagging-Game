@@ -30,6 +30,7 @@ public class MainGame extends AbstractScreen{
 	private ShapeRenderer shapeRenderer;
 	private SpriteBatch batch;
 	private BitmapFont bitmapFont;
+	private GlyphLayout textLayout;
 	
 	private Texture image;
 	private Vector2 imageSize = new Vector2(0, 0);	// New size for the image if
@@ -55,7 +56,6 @@ public class MainGame extends AbstractScreen{
 	private TextButton tutorialBack;
 	private TextButton tutorialNext;
 	private Array<String> tutorialText = new Array<String>();
-	private GlyphLayout tutorialLayout;
 	
 	private int currentTutorialProgress = 0;
 	private int maxTutorialProgress = 0;
@@ -75,7 +75,7 @@ public class MainGame extends AbstractScreen{
 		shapeRenderer = game.getShapeRenderer();
 		batch = game.getBatch();
 		bitmapFont = new BitmapFont();
-		tutorialLayout = new GlyphLayout();
+		textLayout = new GlyphLayout();
 		
 		image = fetchImage();
 		
@@ -117,6 +117,11 @@ public class MainGame extends AbstractScreen{
 		for(Tag t : tags){
 			t.renderText(batch, bitmapFont);
 		}
+		String score = "Score: " + Integer.toString(game.getComm().getPlayerScore());
+		textLayout.setText(bitmapFont, score);
+		bitmapFont.draw(batch, score,
+				game.WORLD_WIDTH - 200 - textLayout.width,
+				25 + textLayout.height / 2);
 		batch.end();
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 		
@@ -148,7 +153,7 @@ public class MainGame extends AbstractScreen{
 		
 		batch.begin();
 		batch.setColor(1, 1, 1, 1);
-		tutorialLayout.setText(bitmapFont,
+		textLayout.setText(bitmapFont,
 				tutorialText.get(currentTutorialProgress));
 		bitmapFont.draw(batch,
 				tutorialText.get(currentTutorialProgress), 55, game.WORLD_HEIGHT - 25);
@@ -185,23 +190,27 @@ public class MainGame extends AbstractScreen{
 	
 	private void buildGUI(){
 		backButton = new TextButton("Menu", game.getUISkin());
-		backButton.setPosition(10, 10);
+		backButton.setHeight(50);
+		backButton.setPosition(0, 0);
 		stage.addActor(backButton);
 		
 		nextButton = new TextButton("Next", game.getUISkin());
+		nextButton.setHeight(50);
 		nextButton.setPosition(
-				game.WORLD_WIDTH - nextButton.getWidth() - 10, 10);
+				game.WORLD_WIDTH - nextButton.getWidth(), 0);
 		stage.addActor(nextButton);
 		
-		addTagButton = new TextButton("+ ", game.getUISkin());
-		addTagButton.setPosition(game.WORLD_WIDTH * 3 / 4, 10);
-		stage.addActor(addTagButton);
-		
 		sharkSelectBox = new SelectBox<String>(game.getUISkin());
-		sharkSelectBox.setPosition(game.WORLD_WIDTH * 1 / 4, 10);
+		sharkSelectBox.setHeight(50);
+		sharkSelectBox.setPosition(100, 8);
 		sharkSelectBox.setItems(sharkList);
 		sharkSelectBox.pack();
 		stage.addActor(sharkSelectBox);
+		
+		addTagButton = new TextButton("+ ", game.getUISkin());
+		addTagButton.setSize(50, 50);
+		addTagButton.setPosition(150 + sharkSelectBox.getWidth(), 0);
+		stage.addActor(addTagButton);
 	
 		backButton.addListener(new ActorGestureListener(){
 			@Override

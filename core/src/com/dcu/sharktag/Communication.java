@@ -6,6 +6,7 @@ import com.badlogic.gdx.Net.HttpRequest;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.JsonValue;
 import com.dcu.sharktag.ServerRequests.ImageRequest;
 import com.dcu.sharktag.ServerRequests.LoginRequest;
 import com.dcu.sharktag.ServerRequests.RecoveryRequest;
@@ -18,6 +19,7 @@ public class Communication {
 	
 	private String serverURL = "http://povilas.ovh:8080";
 
+	private int playerScore = 0;
 	private boolean firstTimer = false;
 	private String sessionToken = "";
 	
@@ -48,6 +50,14 @@ public class Communication {
 		return tmpString;
 	}
 	
+	public int getPlayerScore(){
+		return playerScore;
+	}
+	
+	public void setPlayerScore(int s){
+		playerScore = s;
+	}
+	
 	// Builds a HttpRequest object from a route and object data
 	private HttpRequest buildRequest(String route, Object data) {
 		ServerRequestBuilder reqBuilder = new ServerRequestBuilder();
@@ -64,23 +74,24 @@ public class Communication {
 		
 		HttpRequest request = buildRequest("/login", new LoginRequest(username, password));
 		
-		MyHttpResponseListener customListener = new MyHttpResponseListener();
+		MyHttpResponseListener response = new MyHttpResponseListener();
 		
-		Gdx.net.sendHttpRequest(request, customListener);
+		Gdx.net.sendHttpRequest(request, response);
 		
-		while(!customListener.isResponseReceived());
+		while(!response.isResponseReceived());
 		
 		int serverResponse;
 		String serverMessage;
 		
-		if(customListener.getHttpCode() == 200){
-			serverResponse = customListener.getInt("success");
-			serverMessage = customListener.getString("message");
+		if(response.getHttpCode() == 200){
+			serverResponse = response.getInt("success");
+			serverMessage = response.getString("message");
 			
 			if(serverResponse == 1){
 				status = "";
-				sessionToken = customListener.getString("token");
-				firstTimer = !customListener.getBoolean("tutorialFinished");
+				sessionToken = response.getString("token");
+				firstTimer = !response.getBoolean("tutorialFinished");
+				playerScore = response.getInt("score");
 			}
 			else{
 				status = serverMessage;
@@ -93,24 +104,24 @@ public class Communication {
 		return status;
 	}
 	
-	public String register(String username, String email, String password){
+	public ServerResponse register(String username, String email, String password){
 		
 		String status = "ERROR";
 		
 		HttpRequest request = buildRequest("/register", new RegisterRequest(username, email, password));
 		
-		MyHttpResponseListener customListener = new MyHttpResponseListener();
+		MyHttpResponseListener response = new MyHttpResponseListener();
 		
-		Gdx.net.sendHttpRequest(request, customListener);
+		Gdx.net.sendHttpRequest(request, response);
 		
-		while(!customListener.isResponseReceived());
+		while(!response.isResponseReceived());
 		
 		int serverResponse;
 		String serverMessage;
 		
-		if(customListener.getHttpCode() == 200){
-			serverResponse = customListener.getInt("success");
-			serverMessage = customListener.getString("message");
+		if(response.getHttpCode() == 200){
+			serverResponse = response.getInt("success");
+			serverMessage = response.getString("message");
 			
 			if(serverResponse == 1){
 				status = "";
@@ -120,10 +131,11 @@ public class Communication {
 			}
 		}
 		else{
+			serverResponse = -1;
 			status = "Server could not be reached";
 		}
 		
-		return status;
+		return new ServerResponse(serverResponse, status);
 	}
 	
 	// This method returns a URL string to the image provided by the server
@@ -186,8 +198,16 @@ public class Communication {
 		
 		while(!response.isResponseReceived());
 		
-		int success = response.getInt("success");
-		String message = response.getString("message");
+		int success = -1;
+		
+		if(response.getHttpCode() == 200){
+			success = response.getInt("success");
+			String message = response.getString("message");
+			
+			if(success == 1){
+				playerScore = response.getInt("score");
+			}
+		}
 		
 		return success == 1;
 	}
@@ -201,8 +221,13 @@ public class Communication {
 		
 		while(!response.isResponseReceived());
 		
-		int success = response.getInt("success");
-		Gdx.app.log("debug", response.getString("message"));
+		int success = -1;
+		String message;
+		
+		if(response.getHttpCode() == 200){
+			success = response.getInt("success");
+			message = response.getString("message");
+		}
 		
 		if(success == 1){
 			firstTimer = false;
@@ -225,6 +250,7 @@ public class Communication {
 		
 		if(success == 1){
 			sessionToken = token;
+			playerScore = response.getInt("score");
 		}
 		
 		return success == 1;
@@ -297,5 +323,25 @@ public class Communication {
 			message = "Server could not be reached";
 		}
 		return new ServerResponse(success, message);
+	}
+	
+	public JsonValue requestHighscore(){
+		HttpRequest request = buildRequest("/leaderboard",
+				new SessionRequest(sessionToken));
+		
+		MyHttpResponseListener response = new MyHttpResponseListener();
+		Gdx.net.sendHttpRequest(request, response);
+		
+		while(!response.isResponseReceived());
+		
+		if(response.getHttpCode() == 200){
+			int status = response.getInt("success");
+			
+			if(status == 1){
+				return response.getJsonValue();
+			}
+		}
+		
+		return null;
 	}
 }

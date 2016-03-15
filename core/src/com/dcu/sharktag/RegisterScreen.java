@@ -153,12 +153,12 @@ public class RegisterScreen extends AbstractScreen{
 		if(password.getText().equals(password2.getText()) &&
 				email.getText().contains("@")){
 		
-			String status = game.getComm().register(
+			ServerResponse status = game.getComm().register(
 					username.getText(), email.getText(), password.getText());
 			
 			if(!status.equals("")){
 				Dialog dialog = new Dialog("Error", game.getUISkin());
-				dialog.text(status);
+				dialog.text(status.getMessage());
 				dialog.button("OK");
 				dialog.show(stage);
 				

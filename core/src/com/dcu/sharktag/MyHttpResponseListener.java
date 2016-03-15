@@ -102,4 +102,8 @@ public class MyHttpResponseListener implements HttpResponseListener {
 	public byte[] getData(){
 		return data;
 	}
+	
+	public JsonValue getJsonValue(){
+		return jsonValue;
+	}
 }

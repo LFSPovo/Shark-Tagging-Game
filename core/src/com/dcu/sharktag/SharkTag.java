@@ -23,6 +23,8 @@ public class SharkTag extends Game {
 	
 	private Texture backgroundImage;
 	
+	private int playerScore = 0;
+	
 	@Override
 	public void create () {
 		uiSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
