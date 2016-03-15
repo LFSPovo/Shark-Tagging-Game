@@ -101,11 +101,13 @@ public class ForgotPassScreen extends AbstractScreen {
 		stage.addActor(password2);
 		
 		TextButton submit = new TextButton("Request Code", game.getUISkin());
-		submit.setPosition(uiOriginX, uiOriginY - 210, Align.center);
+		submit.setSize(game.WORLD_WIDTH / 2.2f, 40);
+		submit.setPosition(uiOriginX, uiOriginY - 220, Align.center);
 		stage.addActor(submit);
 		
 		TextButton cancel = new TextButton("Back", game.getUISkin());
-		cancel.setPosition(uiOriginX, uiOriginY - 260, Align.center);
+		cancel.setSize(game.WORLD_WIDTH / 2.2f, 40);
+		cancel.setPosition(uiOriginX, uiOriginY - 270, Align.center);
 		stage.addActor(cancel);
 		
 		submit.addListener(new ActorGestureListener(){

@@ -26,6 +26,7 @@ public class HighScoreScreen extends AbstractScreen{
 	
 	private void buildGUI(){
 		TextButton backButton = new TextButton("Back", game.getUISkin());
+		backButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		backButton.setPosition(uiOriginX, 50, Align.center);
 		stage.addActor(backButton);
 		

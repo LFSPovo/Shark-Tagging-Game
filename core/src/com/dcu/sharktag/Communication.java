@@ -264,7 +264,9 @@ public class Communication {
 		if(response.getHttpCode() == 200){
 			success = response.getInt("success");
 			message = response.getString("message");
-			tmpString = response.getString("username");
+			if(success == 1){
+				tmpString = response.getString("username");
+			}
 		}
 		else{
 			message = "Server could not be reached";

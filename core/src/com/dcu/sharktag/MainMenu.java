@@ -32,26 +32,32 @@ public class MainMenu extends AbstractScreen{
 	
 	private void buildGUI(){
 		TextButton playButton = new TextButton("Play", game.getUISkin());
+		playButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		playButton.setPosition(uiOriginX, uiOriginY, Align.center);
 		stage.addActor(playButton);
 		
 		TextButton optionsButton = new TextButton("Options", game.getUISkin());
+		optionsButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		optionsButton.setPosition(uiOriginX, uiOriginY - 50, Align.center);
 		stage.addActor(optionsButton);
 		
 		TextButton highscoreButton = new TextButton("Highscores", game.getUISkin());
+		highscoreButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		highscoreButton.setPosition(uiOriginX, uiOriginY - 100, Align.center);
 		stage.addActor(highscoreButton);
 		
 		TextButton creditsButton = new TextButton("Credits", game.getUISkin());
+		creditsButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		creditsButton.setPosition(uiOriginX, uiOriginY - 150, Align.center);
 		stage.addActor(creditsButton);
 		
 		TextButton logoutButton = new TextButton("Log out", game.getUISkin());
+		logoutButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		logoutButton.setPosition(uiOriginX, uiOriginY - 200, Align.center);
 		stage.addActor(logoutButton);
 		
 		TextButton exitButton = new TextButton("Exit", game.getUISkin());
+		exitButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		exitButton.setPosition(uiOriginX, uiOriginY - 250, Align.center);
 		stage.addActor(exitButton);
 		

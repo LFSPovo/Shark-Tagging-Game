@@ -92,18 +92,22 @@ public class LoginScreen extends AbstractScreen{
 		stage.addActor(autoLogin);
 		
 		TextButton loginButton = new TextButton("Login", game.getUISkin());
+		loginButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		loginButton.setPosition(uiOriginX, uiOriginY - 180, Align.center);
 		stage.addActor(loginButton);
 		
 		TextButton loginRegister = new TextButton("Register", game.getUISkin());
+		loginRegister.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		loginRegister.setPosition(uiOriginX, uiOriginY - 230, Align.center);
 		stage.addActor(loginRegister);
 		
 		TextButton recoverPassword = new TextButton("Forgot Password", game.getUISkin());
+		recoverPassword.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		recoverPassword.setPosition(uiOriginX, uiOriginY - 280, Align.center);
 		stage.addActor(recoverPassword);
 		
 		TextButton loginExit = new TextButton("Exit", game.getUISkin());
+		loginExit.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		loginExit.setPosition(uiOriginX, uiOriginY - 330, Align.center);
 		stage.addActor(loginExit);
 
