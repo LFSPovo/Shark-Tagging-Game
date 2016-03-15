@@ -116,32 +116,33 @@ public class ForgotPassScreen extends AbstractScreen {
 				super.tap(event, x, y, count, button);
 				
 				if(code.getText().equals("")){
-					String result = game.getComm().recoverPassword(username.getText());
-
+					ServerResponse result = game.getComm().recoverPassword(username.getText());
 					Gdx.input.setOnscreenKeyboardVisible(false);
 					
-					usernameLabel.setVisible(false);
-					username.setVisible(false);
-					codeLabel.setVisible(true);
-					code.setVisible(true);
-					passwordLabel.setVisible(true);
-					password.setVisible(true);
-					passwordLabel2.setVisible(true);
-					password2.setVisible(true);
-					((TextButton) event.getListenerActor()).setText("Submit");
+					if(result.getStatus() == 1){
+						usernameLabel.setVisible(false);
+						username.setVisible(false);
+						codeLabel.setVisible(true);
+						code.setVisible(true);
+						passwordLabel.setVisible(true);
+						password.setVisible(true);
+						passwordLabel2.setVisible(true);
+						password2.setVisible(true);
+						((TextButton) event.getListenerActor()).setText("Submit");
+					}
 					
 					Dialog dialog = new Dialog("", game.getUISkin());
-					dialog.text(result);
+					dialog.text(result.getMessage());
 					dialog.button("OK");
 					dialog.show(stage);
 				}
 				else{
-					String result = game.getComm().recoverPasswordChange(
+					ServerResponse result = game.getComm().recoverPasswordChange(
 							game.getComm().getTmpString(), password.getText(),
 							code.getText());
 					
 					Dialog dialog = new Dialog("", game.getUISkin());
-					dialog.text(result);
+					dialog.text(result.getMessage());
 					dialog.button("OK");
 					dialog.show(stage);
 				}

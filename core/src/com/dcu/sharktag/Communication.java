@@ -250,7 +250,7 @@ public class Communication {
 	}
 
 	// Request a recovery code from the server
-	public String recoverPassword(String username){
+	public ServerResponse recoverPassword(String username){
 		HttpRequest request = buildRequest("/recoverpassword", new RecoveryRequest(username));
 		
 		MyHttpResponseListener response = new MyHttpResponseListener();
@@ -269,13 +269,14 @@ public class Communication {
 			}
 		}
 		else{
+			success = -1;
 			message = "Server could not be reached";
 		}
-		return message;
+		return new ServerResponse(success, message);
 	}
 	
 	// Use the code to change the password
-	public String recoverPasswordChange(String username, String pass, String code){
+	public ServerResponse recoverPasswordChange(String username, String pass, String code){
 		HttpRequest request = buildRequest("/recoverpasswordchange",
 				new RecoveryRequest(username, code, pass));
 		
@@ -292,8 +293,9 @@ public class Communication {
 			message = response.getString("message");
 		}
 		else{
+			success = -1;
 			message = "Server could not be reached";
 		}
-		return message;
+		return new ServerResponse(success, message);
 	}
 }
