@@ -14,10 +14,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
@@ -231,11 +233,33 @@ public class MainGame extends AbstractScreen{
 					dispose();
 				}
 				else{
-					game.getComm().uploadTags(tags);
-					tags.clear();
-					
-					image.dispose();
-					image = fetchImage();
+					if(tags.size == 1 && tags.get(0).getSharkId() == 0){
+						Dialog dialog = new Dialog("Error", game.getUISkin()){
+							@Override
+							protected void result(Object object){
+								if(!(Boolean)object){
+									game.getComm().uploadTags(tags);
+									tags.clear();
+									
+									image.dispose();
+									image = fetchImage();
+								}
+							}
+						};
+						dialog.text("You have one tag which is untagged\n" +
+									"It will not be submitted.\n" +
+									"Submit no tags for this image?");
+						dialog.button("Cancel", true);
+						dialog.button("Submit", false);
+						dialog.show(stage);	
+					}
+					else{
+						game.getComm().uploadTags(tags);
+						tags.clear();
+						
+						image.dispose();
+						image = fetchImage();
+					}
 				}
 			}
 		});
