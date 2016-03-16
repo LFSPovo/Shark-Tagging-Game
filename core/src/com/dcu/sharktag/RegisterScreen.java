@@ -99,10 +99,12 @@ public class RegisterScreen extends AbstractScreen{
 		
 		//BUTTONS
 		TextButton submit = new TextButton("Register", game.getUISkin());
+		submit.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		submit.setPosition(uiOriginX, uiOriginY - 140, Align.center);
 		stage.addActor(submit);
 		
 		TextButton cancel = new TextButton("Cancel", game.getUISkin());
+		cancel.setSize(game.WORLD_WIDTH / 2.2f, 40);
 		cancel.setPosition(uiOriginX, uiOriginY - 190, Align.center);
 		stage.addActor(cancel);
 		
@@ -156,7 +158,7 @@ public class RegisterScreen extends AbstractScreen{
 			ServerResponse status = game.getComm().register(
 					username.getText(), email.getText(), password.getText());
 			
-			if(!status.equals("")){
+			if(status.getStatus() != 1){
 				Dialog dialog = new Dialog("Error", game.getUISkin());
 				dialog.text(status.getMessage());
 				dialog.button("OK");

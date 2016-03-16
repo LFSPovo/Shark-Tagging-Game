@@ -15,6 +15,8 @@ public class TestTags extends TestCase{
 	private Tag tag1;
 	private Tag tag2;
 	private Tag tag3;
+	private Tag tag4;
+	private Tag tag5;
 	
 	protected void setUp(){
 		imgSize = new Vector2(1280, 720);
@@ -26,6 +28,10 @@ public class TestTags extends TestCase{
 		tag2.setSize(new Vector2(100, 51));
 		tag3 = new Tag(800, 30, imgSize, imgScale);
 		tag3.setSize(new Vector2(100, 50));
+		tag4 = new Tag(10, 10, imgSize, imgScale);
+		tag4.setSize(new Vector2(50, 100));
+		tag5 = new Tag(500, 300, imgSize, imgScale);
+		tag5.setSize(new Vector2(-100, 50));
 	}
 	
 	@Test
@@ -47,5 +53,14 @@ public class TestTags extends TestCase{
 		assertTrue(tag1.contains(new Vector2(25, 50)));
 		assertFalse(tag1.contains(new Vector2(-10, -10)));
 		assertFalse(tag1.contains(new Vector2(100, 25)));
+	}
+	
+	@Test
+	public void testOverlap(){
+		System.out.println("testOverlap()");
+		
+		assertTrue(tag1.overlap(tag4, 15));
+		assertFalse(tag2.overlap(tag5, 15));
+		assertFalse(tag1.overlap(tag2, 15));
 	}
 }

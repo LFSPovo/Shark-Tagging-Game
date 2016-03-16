@@ -192,11 +192,11 @@ public class Tag extends SimpleTag implements Comparable{
 	
 	public void grabHandles(Vector2 point){
 		Vector2 tmp = new Vector2(position);
-		if(distance(tmp.add(size), point) < 25 && !moving){
+		if(point.dst(tmp.add(size)) < 25 && !moving){
 			resizing = true;
 		}
 		
-		if(distance(position, point) < 25 && !resizing){
+		if(point.dst(position) < 25 && !resizing){
 			moving = true;
 		}
 	}
@@ -250,11 +250,6 @@ public class Tag extends SimpleTag implements Comparable{
 		return t;
 	}
 	
-	private float distance(Vector2 point1, Vector2 point2){
-		//sqrt((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
-		return (float)Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
-	}
-	
 	// Convert the position and size to match the original scale of the picture
 	private Vector2 getOriginalPosition(Vector2 point){
 		Vector2 tmp = new Vector2(point);
@@ -270,5 +265,15 @@ public class Tag extends SimpleTag implements Comparable{
 		tmp.y = tmp.y * imgScale;
 		
 		return tmp;
+	}
+	
+	public boolean overlap(Tag other, float threshold){
+		if(other.position.dst(position) <= threshold &&
+				(other.position.add(other.size)).dst(position.add(size)) <= threshold){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 }
