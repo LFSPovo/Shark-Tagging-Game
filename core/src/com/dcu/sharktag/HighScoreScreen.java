@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Align;
@@ -55,6 +56,12 @@ public class HighScoreScreen extends AbstractScreen{
 		batch.begin();
 		for(int i = 0; i < leaderboard.size; i += 3){
 			
+//			// Only show the first 20 players, unless there are less than that
+//			// in the database
+//			if(i > leaderboard.size - 1){
+//				break;
+//			}
+			
 			float x = 60;
 			float y = game.WORLD_HEIGHT - 50 - i * 10;
 			
@@ -63,12 +70,19 @@ public class HighScoreScreen extends AbstractScreen{
 				y = game.WORLD_HEIGHT - 50 - (i - 10 * 3) * 10;
 			}
 			
+			// Position
 			textLayout.setText(bitmapFont, leaderboard.get(i));
 			bitmapFont.draw(batch, leaderboard.get(i), x, y);
+			
+			// Number of points
 			textLayout.setText(bitmapFont, leaderboard.get(i + 1));
 			bitmapFont.draw(batch, leaderboard.get(i + 1), x + 60 - textLayout.width / 2, y);
+			
+			// Player name
 			textLayout.setText(bitmapFont, leaderboard.get(i + 2));
-			bitmapFont.draw(batch, leaderboard.get(i + 2), x + 190, y);
+			bitmapFont.draw(batch, leaderboard.get(i + 2), x + 140, y);
+			
+			// For how to read this array, see buildHighscore()
 		}
 		batch.end();
 		super.render(delta);
@@ -82,8 +96,8 @@ public class HighScoreScreen extends AbstractScreen{
 		
 		backButton.addListener(new ActorGestureListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
+			public void tap(InputEvent event, float x, float y, int c, int b){
+				super.tap(event, x, y, c, b);
 				game.setScreen(new MainMenu(game));
 				dispose();
 			}
@@ -91,6 +105,19 @@ public class HighScoreScreen extends AbstractScreen{
 	}
 	
 	private void buildHighscore(){
+		/*
+		 * The array containing the high score table is built in threes
+		 * The first element is the position, for example 1st or 15th
+		 * The second element is the number of points of that player
+		 * And the third element is the name of the player.
+		 * 
+		 * This means when iterating through the array, you have to increment
+		 * the index by 3. And access the position, score and name by
+		 * i, i+1 and i+2 respectively.
+		 */
+		
+		// Retrieve the leader board data from the server
+		// It will never contain more than 20 entries
 		JsonValue table = game.getComm().requestHighscore().get("leaderboard");
 		
 		int place = 1;
@@ -106,6 +133,12 @@ public class HighScoreScreen extends AbstractScreen{
 				leaderboard.add(table.get(i).get("username").asString());
 				place++;
 			}
+		}
+		else{
+			Dialog dialog = new Dialog("Error", game.getUISkin());
+			dialog.text("Could not retrieve the leader board");
+			dialog.button("OK");
+			dialog.show(stage);
 		}
 	}
 }

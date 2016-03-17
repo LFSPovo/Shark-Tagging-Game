@@ -167,7 +167,7 @@ public class MainGame extends AbstractScreen{
 	private Texture fetchImage(){
 		Texture t;
 		if(game.getComm().isFirstTimer()){
-			t = new Texture(Gdx.files.internal("shark-test.jpg"));
+			t = new Texture(Gdx.files.internal("tutorial.jpg"));
 		}
 		else{
 			String imageUrl = game.getComm().requestImage();
