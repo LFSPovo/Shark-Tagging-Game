@@ -72,6 +72,7 @@ public class LoginScreen extends AbstractScreen{
 		stage.addActor(usernameLabel);
 		loginName = new TextField("", game.getUISkin());
 		loginName.setWidth(game.WORLD_WIDTH / 2.2f);
+		loginName.setMaxLength(20);
 		loginName.setPosition(uiOriginX, uiOriginY, Align.center);
 		
 		stage.addActor(loginName);

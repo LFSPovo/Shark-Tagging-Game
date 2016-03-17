@@ -63,6 +63,7 @@ public class RegisterScreen extends AbstractScreen{
 		stage.addActor(usernameLabel);
 		username = new TextField("", game.getUISkin());
 		username.setWidth(game.WORLD_WIDTH / 2.2f);
+		username.setMaxLength(20);
 		username.setPosition(game.WORLD_WIDTH / 4, uiOriginY, Align.center);
 		stage.addActor(username);
 		

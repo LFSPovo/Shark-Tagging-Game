@@ -63,6 +63,7 @@ public class ForgotPassScreen extends AbstractScreen {
 		username = new TextField("", game.getUISkin());
 		stage.addActor(usernameLabel);
 		username.setWidth(game.WORLD_WIDTH / 2.2f);
+		username.setMaxLength(20);
 		username.setPosition(uiOriginX, uiOriginY, Align.center);
 		stage.addActor(username);
 		
