@@ -71,7 +71,7 @@ public class LoginScreen extends AbstractScreen{
 		usernameLabel.setPosition(uiOriginX, uiOriginY + 30, Align.center);
 		stage.addActor(usernameLabel);
 		loginName = new TextField("", game.getUISkin());
-		loginName.setWidth(game.WORLD_WIDTH / 2.2f);
+		loginName.setWidth(game.getWidth() / 2.2f);
 		loginName.setMaxLength(20);
 		loginName.setPosition(uiOriginX, uiOriginY, Align.center);
 		
@@ -83,7 +83,7 @@ public class LoginScreen extends AbstractScreen{
 		loginPassword = new TextField("", game.getUISkin());
 		loginPassword.setPasswordMode(true);
 		loginPassword.setPasswordCharacter('*');
-		loginPassword.setWidth(game.WORLD_WIDTH / 2.2f);
+		loginPassword.setWidth(game.getWidth() / 2.2f);
 		loginPassword.setPosition(uiOriginX, uiOriginY - 80, Align.center);
 		stage.addActor(loginPassword);
 		
@@ -93,29 +93,30 @@ public class LoginScreen extends AbstractScreen{
 		stage.addActor(autoLogin);
 		
 		TextButton loginButton = new TextButton("Login", game.getUISkin());
-		loginButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
+		loginButton.setSize(game.getWidth() / 2.2f, 40);
 		loginButton.setPosition(uiOriginX, uiOriginY - 180, Align.center);
 		stage.addActor(loginButton);
 		
 		TextButton loginRegister = new TextButton("Register", game.getUISkin());
-		loginRegister.setSize(game.WORLD_WIDTH / 2.2f, 40);
+		loginRegister.setSize(game.getWidth() / 2.2f, 40);
 		loginRegister.setPosition(uiOriginX, uiOriginY - 230, Align.center);
 		stage.addActor(loginRegister);
 		
-		TextButton recoverPassword = new TextButton("Forgot Password", game.getUISkin());
-		recoverPassword.setSize(game.WORLD_WIDTH / 2.2f, 40);
+		TextButton recoverPassword = new TextButton("Forgot Password",
+													game.getUISkin());
+		recoverPassword.setSize(game.getWidth() / 2.2f, 40);
 		recoverPassword.setPosition(uiOriginX, uiOriginY - 280, Align.center);
 		stage.addActor(recoverPassword);
 		
 		TextButton loginExit = new TextButton("Exit", game.getUISkin());
-		loginExit.setSize(game.WORLD_WIDTH / 2.2f, 40);
+		loginExit.setSize(game.getWidth() / 2.2f, 40);
 		loginExit.setPosition(uiOriginX, uiOriginY - 330, Align.center);
 		stage.addActor(loginExit);
 
 		loginButton.addListener(new ActorGestureListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
+			public void tap(InputEvent event, float x, float y, int c, int b){
+				super.tap(event, x, y, c, b);
 				
 				if(loginUser(loginName.getText(), loginPassword.getText())){
 					Gdx.input.setOnscreenKeyboardVisible(false);
@@ -136,8 +137,8 @@ public class LoginScreen extends AbstractScreen{
 		
 		loginRegister.addListener(new ActorGestureListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
+			public void tap(InputEvent event, float x, float y, int c, int b){
+				super.tap(event, x, y, c, b);
 				game.setScreen(new RegisterScreen(game));
 				dispose();
 			}
@@ -145,29 +146,32 @@ public class LoginScreen extends AbstractScreen{
 		
 		recoverPassword.addListener(new ActorGestureListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
+			public void tap(InputEvent event, float x, float y, int c, int b){
+				super.tap(event, x, y, c, b);
 				game.setScreen(new ForgotPassScreen(game));
 			}
 		});
 		
 		loginExit.addListener(new ActorGestureListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
+			public void tap(InputEvent event, float x, float y, int c, int b){
+				super.tap(event, x, y, c, b);
 				Gdx.app.exit();
 			}
 		});
 	}
 	
-	private boolean loginUser(String name, String password){		
+	private boolean loginUser(String name, String password){
+		
+		// When none of the fields are empty, attempt to log in
 		if(!loginName.getText().equals("") && !loginPassword.getText().equals("")){
-			String status = game.getComm().logIn(loginName.getText(), loginPassword.getText());
+			ServerResponse status = game.getComm().logIn(loginName.getText(),
+														loginPassword.getText());
 			
-			if(!status.equals("")){
+			if(status.getStatus() != 1){
 				Gdx.input.setOnscreenKeyboardVisible(false);
 				Dialog dialog = new Dialog("Error", game.getUISkin());
-				dialog.text(status);
+				dialog.text(status.getMessage());
 				dialog.button("OK");
 				dialog.show(stage);
 				
@@ -177,8 +181,6 @@ public class LoginScreen extends AbstractScreen{
 			return true;
 		}
 		else{
-			Gdx.app.log("debug", "Some fields are empty");
-			
 			if(loginName.getText().equals("")){
 				loginName.setColor(1, 0, 0, 1);
 				nameWasBlank = true;

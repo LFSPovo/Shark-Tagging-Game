@@ -52,6 +52,10 @@ public class Tag extends SimpleTag implements Comparable{
 		
 		return (int)(getArea() - other.getArea());
 	}
+	
+	public String toString(){
+		return position.toString() + " " + size.toString() + " " + getArea();
+	}
 
 	public void update(Vector2 point){
 		if(active){
@@ -199,6 +203,10 @@ public class Tag extends SimpleTag implements Comparable{
 		if(point.dst(position) < 25 && !resizing){
 			moving = true;
 		}
+	}
+	
+	public boolean handleGrabbed(){
+		return moving || resizing;
 	}
 	
 	public void releaseHandles(){

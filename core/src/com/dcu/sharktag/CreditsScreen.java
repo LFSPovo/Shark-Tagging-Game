@@ -46,9 +46,8 @@ public class CreditsScreen extends AbstractScreen{
 	}
 	
 	private void buildGUI(){
-		
 		TextButton backButton = new TextButton("Back", game.getUISkin());
-		backButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
+		backButton.setSize(game.getWidth() / 2.2f, 40);
 		backButton.setPosition(uiOriginX, 50, Align.center);
 		stage.addActor(backButton);
 		
@@ -71,7 +70,7 @@ public class CreditsScreen extends AbstractScreen{
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		shapeRenderer.setColor(0, 0, 0, 0.3f);
 		shapeRenderer.rect(50, 0,
-				game.WORLD_WIDTH - 100, game.WORLD_HEIGHT);
+				game.getWidth() - 100, game.getHeight());
 		shapeRenderer.end();
 		
 		game.getBatch().begin();

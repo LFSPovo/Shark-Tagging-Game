@@ -7,6 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+/*
+ * This class abstracts away the GUI code needed by each screen
+ */
+
 public class AbstractScreen extends ScreenAdapter{
 
 	protected SharkTag game;
@@ -21,11 +25,11 @@ public class AbstractScreen extends ScreenAdapter{
 	
 	@Override
 	public void show(){
-		stage = new Stage(new FitViewport(game.WORLD_WIDTH, game.WORLD_HEIGHT));
+		stage = new Stage(new FitViewport(game.getWidth(), game.getHeight()));
 		Gdx.input.setInputProcessor(stage);
 		
-		uiOriginX = game.WORLD_WIDTH / 2;
-		uiOriginY = 4 * game.WORLD_HEIGHT / 5 + 50;
+		uiOriginX = game.getWidth() / 2;
+		uiOriginY = 4 * game.getHeight() / 5 + 50;
 		
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 	}

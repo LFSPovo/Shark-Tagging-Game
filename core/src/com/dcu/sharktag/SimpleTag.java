@@ -2,6 +2,9 @@ package com.dcu.sharktag;
 
 import com.badlogic.gdx.math.Vector2;
 
+/*
+ * This class gets serialised and sent to the server as a tag
+ */
 public class SimpleTag {
 
 	protected Vector2 position = new Vector2();

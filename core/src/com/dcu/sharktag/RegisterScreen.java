@@ -44,7 +44,7 @@ public class RegisterScreen extends AbstractScreen{
 		batch.setProjectionMatrix(stage.getCamera().projection);
 		batch.setTransformMatrix(stage.getCamera().view);
 		batch.begin();
-		batch.draw(backgroundImage, 0, 0, game.WORLD_WIDTH, game.WORLD_HEIGHT);
+		batch.draw(backgroundImage, 0, 0, game.getWidth(), game.getHeight());
 		batch.end();
 		
 		super.render(delta);
@@ -59,60 +59,65 @@ public class RegisterScreen extends AbstractScreen{
 	private void buildGUI(){
 		//USERNAME
 		Label usernameLabel = new Label("Username", game.getUISkin());
-		usernameLabel.setPosition(game.WORLD_WIDTH / 4, uiOriginY + 30, Align.center);
+		usernameLabel.setPosition(game.getWidth() / 4,
+									uiOriginY + 30, Align.center);
 		stage.addActor(usernameLabel);
 		username = new TextField("", game.getUISkin());
-		username.setWidth(game.WORLD_WIDTH / 2.2f);
+		username.setWidth(game.getWidth() / 2.2f);
 		username.setMaxLength(20);
-		username.setPosition(game.WORLD_WIDTH / 4, uiOriginY, Align.center);
+		username.setPosition(game.getWidth() / 4, uiOriginY, Align.center);
 		stage.addActor(username);
 		
 		//EMAIL
 		Label emailLabel = new Label("Email", game.getUISkin());
-		emailLabel.setPosition(game.WORLD_WIDTH / 4 * 3, uiOriginY + 30, Align.center);
+		emailLabel.setPosition(game.getWidth() / 4 * 3,
+								uiOriginY + 30, Align.center);
 		stage.addActor(emailLabel);
 		email = new TextField("", game.getUISkin());
-		email.setWidth(game.WORLD_WIDTH / 2.2f);
-		email.setPosition(game.WORLD_WIDTH / 4 * 3, uiOriginY, Align.center);
+		email.setWidth(game.getWidth() / 2.2f);
+		email.setPosition(game.getWidth() / 4 * 3, uiOriginY, Align.center);
 		stage.addActor(email);
 		
 		//PASSWORD
 		Label passwordLabel = new Label("Password", game.getUISkin());
-		passwordLabel.setPosition(game.WORLD_WIDTH / 4, uiOriginY - 50, Align.center);
+		passwordLabel.setPosition(game.getWidth() / 4,
+									uiOriginY - 50, Align.center);
 		stage.addActor(passwordLabel);
 		password = new TextField("", game.getUISkin());
 		password.setPasswordCharacter('*');
 		password.setPasswordMode(true);
-		password.setWidth(game.WORLD_WIDTH / 2.2f);
-		password.setPosition(game.WORLD_WIDTH / 4, uiOriginY - 80, Align.center);
+		password.setWidth(game.getWidth() / 2.2f);
+		password.setPosition(game.getWidth() / 4, uiOriginY - 80, Align.center);
 		stage.addActor(password);
 		
 		//REPEAT PASSWORD
 		Label password2Label = new Label("Repeat Password", game.getUISkin());
-		password2Label.setPosition(game.WORLD_WIDTH / 4 * 3, uiOriginY - 50, Align.center);
+		password2Label.setPosition(game.getWidth() / 4 * 3,
+									uiOriginY - 50, Align.center);
 		stage.addActor(password2Label);
 		password2 = new TextField("", game.getUISkin());
 		password2.setPasswordCharacter('*');
 		password2.setPasswordMode(true);
-		password2.setWidth(game.WORLD_WIDTH / 2.2f);
-		password2.setPosition(game.WORLD_WIDTH / 4 * 3, uiOriginY - 80, Align.center);
+		password2.setWidth(game.getWidth() / 2.2f);
+		password2.setPosition(game.getWidth() / 4 * 3,
+								uiOriginY - 80, Align.center);
 		stage.addActor(password2);
 		
 		//BUTTONS
 		TextButton submit = new TextButton("Register", game.getUISkin());
-		submit.setSize(game.WORLD_WIDTH / 2.2f, 40);
+		submit.setSize(game.getWidth() / 2.2f, 40);
 		submit.setPosition(uiOriginX, uiOriginY - 140, Align.center);
 		stage.addActor(submit);
 		
 		TextButton cancel = new TextButton("Cancel", game.getUISkin());
-		cancel.setSize(game.WORLD_WIDTH / 2.2f, 40);
+		cancel.setSize(game.getWidth() / 2.2f, 40);
 		cancel.setPosition(uiOriginX, uiOriginY - 190, Align.center);
 		stage.addActor(cancel);
 		
 		submit.addListener(new ActorGestureListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
+			public void tap(InputEvent event, float x, float y, int c, int b){
+				super.tap(event, x, y, c, b);
 				if(register()){
 					game.setScreen(new LoginScreen(game));
 					dispose();
@@ -122,8 +127,8 @@ public class RegisterScreen extends AbstractScreen{
 		
 		cancel.addListener(new ActorGestureListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
+			public void tap(InputEvent event, float x, float y, int c, int b){
+				super.tap(event, x, y, c, b);
 				game.setScreen(new LoginScreen(game));
 				dispose();
 			}
@@ -140,6 +145,7 @@ public class RegisterScreen extends AbstractScreen{
 			email.setColor(1, 0, 0, 1);
 		}
 
+		// Check if password is typed correctly
 		if(password2.getText().equals("")){
 			password2.setColor(1, 1, 1, 1);
 		}
@@ -149,12 +155,18 @@ public class RegisterScreen extends AbstractScreen{
 		else{
 			password2.setColor(0, 1, 0, 1);
 		}
+		
+		// Do not allow @ in the username
+		username.setColor(1, 1, 1, 1);
+		if(username.getText().contains("@")){
+			username.setColor(1, 0, 0, 1);
+		}
 	}
 	
 	private boolean register(){
-		
 		if(password.getText().equals(password2.getText()) &&
-				email.getText().contains("@")){
+				email.getText().contains("@") &&
+				!username.getText().contains("@")){
 		
 			ServerResponse status = game.getComm().register(
 					username.getText(), email.getText(), password.getText());
@@ -171,7 +183,6 @@ public class RegisterScreen extends AbstractScreen{
 			return true;
 		}
 		else{
-			Gdx.app.log("debug", "Some fields are filled incorrectly");
 			
 			Dialog dialog = new Dialog("Error", game.getUISkin());
 			dialog.text("Some fields are filled incorrectly");

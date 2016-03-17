@@ -10,9 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class SharkTag extends Game {
-	
-	public final float WORLD_WIDTH = 854;
-	public final float WORLD_HEIGHT = 480;
+	private float worldWidth = 854;
+	private float worldHeight = 480;
 	
 	private Skin uiSkin;
 	private Communication comm = new Communication();
@@ -22,8 +21,6 @@ public class SharkTag extends Game {
 	private ShapeRenderer shapeRenderer;	//for drawing rectangles
 	
 	private Texture backgroundImage;
-	
-	private int playerScore = 0;
 	
 	@Override
 	public void create () {
@@ -57,11 +54,19 @@ public class SharkTag extends Game {
 		return shapeRenderer;
 	}
 	
+	public float getWidth(){
+		return worldWidth;
+	}
+	
+	public float getHeight(){
+		return worldHeight;
+	}
+	
 	public void drawBackground(Stage s){
 		batch.setProjectionMatrix(s.getCamera().projection);
 		batch.setTransformMatrix(s.getCamera().view);
 		batch.begin();
-		batch.draw(backgroundImage, 0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+		batch.draw(backgroundImage, 0, 0, getWidth(), getHeight());
 		batch.end();
 	}
 }

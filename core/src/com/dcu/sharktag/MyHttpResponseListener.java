@@ -10,6 +10,9 @@ import com.badlogic.gdx.Net.HttpResponseListener;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
+/*
+ * This class takes care of handling data coming from the server
+ */
 public class MyHttpResponseListener implements HttpResponseListener {
 	
 	private volatile boolean responseReceived = false;
@@ -19,13 +22,11 @@ public class MyHttpResponseListener implements HttpResponseListener {
 	private JsonValue jsonValue;
 
 	@Override
-	public void handleHttpResponse(HttpResponse httpResponse) {
-		
+	public void handleHttpResponse(HttpResponse httpResponse) {	
 		httpCode = httpResponse.getStatus().getStatusCode();
-		Gdx.app.log("debug", "Getting HTTP code: " + httpCode);
 		
 		try{
-			Gdx.app.log("debug", "Opening stream");
+			// Convert stream to byte array
 			InputStream is = httpResponse.getResultAsStream();
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
 		
@@ -38,9 +39,10 @@ public class MyHttpResponseListener implements HttpResponseListener {
 			
 			os.flush();
 			data = os.toByteArray();
-			Gdx.app.log("debug", "New data: " + data.length);
 			
-			if(data.length < 500){
+			// Data received from the server smaller than 1kb should be
+			// considered as JSON, not a binary image
+			if(data.length < 1024){
 				jsonValue = new JsonReader().parse(os.toString());
 			}
 		}
@@ -99,6 +101,7 @@ public class MyHttpResponseListener implements HttpResponseListener {
 		return httpCode;
 	}
 	
+	// Binary data
 	public byte[] getData(){
 		return data;
 	}

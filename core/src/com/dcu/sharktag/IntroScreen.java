@@ -30,11 +30,13 @@ public class IntroScreen extends ScreenAdapter{
 	
 	@Override
 	public void show(){
+		// This screen does not use AbstractScreen, so we need to set the
+		// camera and viewport ourselves
 		camera = new OrthographicCamera();
-		camera.position.set(game.WORLD_WIDTH / 2, game.WORLD_HEIGHT / 2, 0);
+		camera.position.set(game.getWidth() / 2, game.getHeight() / 2, 0);
 		camera.update();
 		
-		viewport = new FitViewport(game.WORLD_WIDTH, game.WORLD_HEIGHT, camera);
+		viewport = new FitViewport(game.getWidth(), game.getHeight(), camera);
 		
 		logo = new Texture(Gdx.files.internal("libgdx-logo.png"));
 	}
@@ -63,8 +65,8 @@ public class IntroScreen extends ScreenAdapter{
 		
 		batch.begin();
 		batch.setColor(1, 1, 1, MathUtils.clamp(fadein, 0, 1));
-		batch.draw(logo, game.WORLD_WIDTH / 2 - logo.getWidth() / 2,
-				game.WORLD_HEIGHT / 2 - logo.getHeight() / 2);
+		batch.draw(logo, game.getWidth() / 2 - logo.getWidth() / 2,
+				game.getHeight() / 2 - logo.getHeight() / 2);
 		batch.end();
 	}
 	
@@ -74,13 +76,16 @@ public class IntroScreen extends ScreenAdapter{
 	}
 	
 	private void update(float delta){
+		// delta is frame rate agnostic
 		fadein += delta / 2;
 		
 		if(fadein > 1.5 ||
 			Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY) ||
 			Gdx.input.isTouched()){
+			
 			clearScreen();
 			game.setScreen(new LoginScreen(game));
+			dispose();
 		}
 	}
 }

@@ -1,6 +1,5 @@
 package com.dcu.sharktag;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
@@ -19,13 +18,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
 public class MainGame extends AbstractScreen{
 	
@@ -45,6 +41,7 @@ public class MainGame extends AbstractScreen{
 	Array<Tag> tags = new Array<Tag>();
 	boolean touchDown = false;
 	
+	// Used for the selection box
 	private Array<String> sharkList = new Array<String>();
 	private HashMap<String, Integer> species = new HashMap<String, Integer>();
 	
@@ -107,22 +104,25 @@ public class MainGame extends AbstractScreen{
 	private void draw(){
 		batch.setProjectionMatrix(stage.getCamera().projection);
 		batch.setTransformMatrix(stage.getCamera().view);
+		
 		Gdx.gl.glEnable(GL20.GL_BLEND);
-		batch.begin();
-				
+		
+		batch.begin();			
 		if(image != null){
 			batch.draw(image,
-					(game.WORLD_WIDTH - imageSize.x) / 2,	//if it's smaller 
-					game.WORLD_HEIGHT - imageSize.y,		//than the screen
+					(game.getWidth() - imageSize.x) / 2,	//if it's smaller 
+					game.getHeight() - imageSize.y,		//than the screen
 					imageSize.x, imageSize.y);
 		}
+		
 		for(Tag t : tags){
 			t.renderText(batch, bitmapFont);
 		}
+		
 		String score = "Score: " + Integer.toString(game.getComm().getPlayerScore());
 		textLayout.setText(bitmapFont, score);
 		bitmapFont.draw(batch, score,
-				game.WORLD_WIDTH - 200 - textLayout.width,
+				game.getWidth() - 200 - textLayout.width,
 				25 + textLayout.height / 2);
 		batch.end();
 		Gdx.gl.glDisable(GL20.GL_BLEND);
@@ -150,15 +150,14 @@ public class MainGame extends AbstractScreen{
 		
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		shapeRenderer.setColor(0, 0, 0, 0.3f);
-		shapeRenderer.rect(50, game.WORLD_HEIGHT - 150, 300, 130);
+		shapeRenderer.rect(50, game.getHeight() - 150, 300, 130);
 		shapeRenderer.end();
 		
 		batch.begin();
 		batch.setColor(1, 1, 1, 1);
-		textLayout.setText(bitmapFont,
-				tutorialText.get(currentTutorialProgress));
+		textLayout.setText(bitmapFont, tutorialText.get(currentTutorialProgress));
 		bitmapFont.draw(batch,
-				tutorialText.get(currentTutorialProgress), 55, game.WORLD_HEIGHT - 25);
+				tutorialText.get(currentTutorialProgress), 55, game.getHeight() - 25);
 		batch.end();
 		
 		Gdx.gl.glDisable(GL20.GL_BLEND);
@@ -167,10 +166,20 @@ public class MainGame extends AbstractScreen{
 	private Texture fetchImage(){
 		Texture t;
 		if(game.getComm().isFirstTimer()){
+			// Load tutorial image from local asset directory
 			t = new Texture(Gdx.files.internal("tutorial.jpg"));
 		}
 		else{
 			String imageUrl = game.getComm().requestImage();
+			
+			if(imageUrl.equals("")){
+				Dialog dialog = new Dialog("Error", game.getUISkin());
+				dialog.text("Could not retrieve new image.\n" + 
+							"Try again.");
+				dialog.button("OK");
+				dialog.show(stage);
+				return null;
+			}
 			t = game.getComm().fetchImage(imageUrl);
 		}
 		
@@ -180,11 +189,12 @@ public class MainGame extends AbstractScreen{
 		
 		imageRatio = imageSize.x / imageSize.y;
 		
-		if(imageSize.y > game.WORLD_HEIGHT - 50){
-			imageSize.y = game.WORLD_HEIGHT - 50;
+		if(imageSize.y > game.getHeight() - 50){
+			imageSize.y = game.getHeight() - 50;
 			imageSize.x = imageSize.y * imageRatio;
 		}
 		
+		// Later used for converting tags to original image size
 		imageScale = t.getWidth() / imageSize.x;
 		
 		return t;
@@ -199,7 +209,7 @@ public class MainGame extends AbstractScreen{
 		nextButton = new TextButton("Next", game.getUISkin());
 		nextButton.setHeight(50);
 		nextButton.setPosition(
-				game.WORLD_WIDTH - nextButton.getWidth(), 0);
+				game.getWidth() - nextButton.getWidth(), 0);
 		stage.addActor(nextButton);
 		
 		sharkSelectBox = new SelectBox<String>(game.getUISkin());
@@ -216,8 +226,8 @@ public class MainGame extends AbstractScreen{
 	
 		backButton.addListener(new ActorGestureListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
+			public void tap(InputEvent event, float x, float y, int c, int b){
+				super.tap(event, x, y, c, b);
 				game.setScreen(new MainMenu(game));
 				dispose();
 			}
@@ -225,14 +235,15 @@ public class MainGame extends AbstractScreen{
 	
 		nextButton.addListener(new ActorGestureListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
+			public void tap(InputEvent event, float x, float y, int c, int b){
+				super.tap(event, x, y, c, b);
 				if(game.getComm().isFirstTimer()){
 					game.getComm().finishTutorial();
 					game.setScreen(new MainMenu(game));
 					dispose();
 				}
 				else{
+					// In case the player forgets to name his only tag
 					if(tags.size == 1 && tags.get(0).getSharkId() == 0){
 						Dialog dialog = new Dialog("Error", game.getUISkin()){
 							@Override
@@ -266,10 +277,10 @@ public class MainGame extends AbstractScreen{
 
 		addTagButton.addListener(new ActorGestureListener(){
 			@Override
-			public void tap(InputEvent event, float x, float y, int count, int button){
-				super.tap(event, x, y, count, button);
+			public void tap(InputEvent event, float x, float y, int c, int b){
+				super.tap(event, x, y, c, b);
 				if(!emptyTagExists()){
-					addTag(game.WORLD_WIDTH / 2 - 25, game.WORLD_HEIGHT / 2 - 25);
+					addTag(game.getWidth() / 2 - 25, game.getHeight() / 2 - 25);
 				}
 			}
 		});
@@ -284,19 +295,23 @@ public class MainGame extends AbstractScreen{
 		
 		if(game.getComm().isFirstTimer()){
 			tutorialBack = new TextButton("<<", game.getUISkin());
-			tutorialBack.setPosition(200 - 100, game.WORLD_HEIGHT - 130, Align.center);
+			tutorialBack.setPosition(200 - 100,
+									game.getHeight() - 130,
+									Align.center);
 			tutorialBack.setColor(1, 1, 1, 0.3f);
 			tutorialBack.setTouchable(Touchable.disabled);
 			stage.addActor(tutorialBack);
 			
 			tutorialNext= new TextButton(">>", game.getUISkin());
-			tutorialNext.setPosition(200 + 100, game.WORLD_HEIGHT - 130, Align.center);
+			tutorialNext.setPosition(200 + 100,
+									game.getHeight() - 130,
+									Align.center);
 			stage.addActor(tutorialNext);
 			
 			tutorialNext.addListener(new ActorGestureListener(){
 				@Override
-				public void tap(InputEvent event, float x, float y, int count, int button){
-					super.tap(event, x, y, count, button);
+				public void tap(InputEvent event, float x, float y, int c, int b){
+					super.tap(event, x, y, c, b);
 					if(currentTutorialProgress < tutorialText.size - 1){
 						currentTutorialProgress++;
 						if(maxTutorialProgress < currentTutorialProgress){
@@ -316,8 +331,8 @@ public class MainGame extends AbstractScreen{
 			
 			tutorialBack.addListener(new ActorGestureListener(){
 				@Override
-				public void tap(InputEvent event, float x, float y, int count, int button){
-					super.tap(event, x, y, count, button);
+				public void tap(InputEvent event, float x, float y, int c, int b){
+					super.tap(event, x, y, c, b);
 					if(currentTutorialProgress > 0){
 						currentTutorialProgress--;
 						tutorialNext.setColor(1, 1, 1, 1f);
@@ -346,6 +361,9 @@ public class MainGame extends AbstractScreen{
 					
 					if(t.isActive()){
 						t.grabHandles(touchPoint);
+						if(t.handleGrabbed()){
+							break;
+						}
 					}
 					else{
 						if(t.contains(touchPoint) && !touchDown){
@@ -355,8 +373,8 @@ public class MainGame extends AbstractScreen{
 							}
 							
 							t.setActive(true);
-							
 							sharkSelectBox.setSelected(t.getText());
+							break;
 						}
 						else{
 							t.setActive(false);
@@ -386,6 +404,7 @@ public class MainGame extends AbstractScreen{
 		Tag newTag = new Tag(x, y, imageSize, imageScale);
 		sharkSelectBox.setSelectedIndex(newTag.getSharkId());
 		tags.add(newTag);
+		sortTags();
 	}
 	
 	private boolean emptyTagExists(){
@@ -409,9 +428,9 @@ public class MainGame extends AbstractScreen{
 	}
 	
 	private void sortTags(){
-		//sort the tags by area, with smallest first
+		// Sort the tags by area, with smallest first
 		tags.sort();
-		tags.reverse();
+		System.out.println(tags.toString());
 	}
 	
 	private void buildTutorial(){
@@ -437,7 +456,6 @@ public class MainGame extends AbstractScreen{
 	
 	// Parse JSON file to populate the selection box
 	private void buildSpecies(String file){
-		Json json = new Json();
 		JsonValue mainJson = new JsonReader().parse(Gdx.files.internal("species.json"));
 		JsonValue spec = mainJson.get("species");
 		

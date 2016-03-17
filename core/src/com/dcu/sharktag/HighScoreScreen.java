@@ -50,24 +50,21 @@ public class HighScoreScreen extends AbstractScreen{
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		shapeRenderer.setColor(0, 0, 0, 0.3f);
 		shapeRenderer.rect(50, 0,
-				game.WORLD_WIDTH - 100, game.WORLD_HEIGHT);
+				game.getWidth() - 100, game.getHeight());
 		shapeRenderer.end();
 		
 		batch.begin();
+		
 		for(int i = 0; i < leaderboard.size; i += 3){
 			
-//			// Only show the first 20 players, unless there are less than that
-//			// in the database
-//			if(i > leaderboard.size - 1){
-//				break;
-//			}
-			
+			// Set local coordinates
 			float x = 60;
-			float y = game.WORLD_HEIGHT - 50 - i * 10;
+			float y = game.getHeight() - 50 - i * 10;
 			
+			// Column overflows to the right after 10th position
 			if(i > 10 * 3){
-				x = game.WORLD_WIDTH / 2 + 10;
-				y = game.WORLD_HEIGHT - 50 - (i - 10 * 3) * 10;
+				x = game.getWidth() / 2 + 10;
+				y = game.getHeight() - 50 - (i - 10 * 3) * 10;
 			}
 			
 			// Position
@@ -76,7 +73,10 @@ public class HighScoreScreen extends AbstractScreen{
 			
 			// Number of points
 			textLayout.setText(bitmapFont, leaderboard.get(i + 1));
-			bitmapFont.draw(batch, leaderboard.get(i + 1), x + 60 - textLayout.width / 2, y);
+			bitmapFont.draw(batch,
+							leaderboard.get(i + 1),
+							x + 60 - textLayout.width / 2,
+							y);
 			
 			// Player name
 			textLayout.setText(bitmapFont, leaderboard.get(i + 2));
@@ -90,7 +90,7 @@ public class HighScoreScreen extends AbstractScreen{
 	
 	private void buildGUI(){
 		TextButton backButton = new TextButton("Back", game.getUISkin());
-		backButton.setSize(game.WORLD_WIDTH / 2.2f, 40);
+		backButton.setSize(game.getWidth() / 2.2f, 40);
 		backButton.setPosition(uiOriginX, 50, Align.center);
 		stage.addActor(backButton);
 		
@@ -104,6 +104,9 @@ public class HighScoreScreen extends AbstractScreen{
 		});
 	}
 	
+	/*
+	 * Builds a correctly formatted array of data
+	 */
 	private void buildHighscore(){
 		/*
 		 * The array containing the high score table is built in threes
@@ -123,6 +126,7 @@ public class HighScoreScreen extends AbstractScreen{
 		int place = 1;
 		
 		if(table != null){
+			// Column headers
 			leaderboard.add("Place");
 			leaderboard.add("Score");
 			leaderboard.add("Player");
