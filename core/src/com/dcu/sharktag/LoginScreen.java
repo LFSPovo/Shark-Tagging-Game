@@ -19,9 +19,13 @@ public class LoginScreen extends AbstractScreen{
 	
 	private boolean nameWasBlank = false;
 	private boolean passwordWasBlank = false;
+	
+	private String message;
 
-	public LoginScreen(SharkTag game){
+	public LoginScreen(SharkTag game, String msg){
 		super(game);
+		
+		message = msg;
 	}
 	
 	@Override
@@ -41,6 +45,13 @@ public class LoginScreen extends AbstractScreen{
 	
 		// This code is not reached when automatic login succeeds
 		buildGUI();
+		
+		if(message != null){
+			Dialog dialog = new Dialog("", game.getUISkin());
+			dialog.text(message);
+			dialog.button("OK");
+			dialog.show(stage);
+		}
 	}
 	
 	@Override

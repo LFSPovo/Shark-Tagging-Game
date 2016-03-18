@@ -163,7 +163,7 @@ public class ForgotPassScreen extends AbstractScreen {
 			public void tap(InputEvent event, float x, float y, int c, int b){
 				super.tap(event, x, y, c, b);
 				
-				game.setScreen(new LoginScreen(game));
+				game.setScreen(new LoginScreen(game, null));
 				dispose();
 			}
 		});

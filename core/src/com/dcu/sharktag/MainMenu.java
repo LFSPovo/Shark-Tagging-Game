@@ -107,7 +107,7 @@ public class MainMenu extends AbstractScreen{
 				game.getPreferences().putString("token", "");
 				game.getPreferences().flush();
 				game.getComm().logOut();
-				game.setScreen(new LoginScreen(game));
+				game.setScreen(new LoginScreen(game, null));
 				dispose();
 			}
 		});

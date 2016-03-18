@@ -84,7 +84,7 @@ public class IntroScreen extends ScreenAdapter{
 			Gdx.input.isTouched()){
 			
 			clearScreen();
-			game.setScreen(new LoginScreen(game));
+			game.setScreen(new LoginScreen(game, null));
 			dispose();
 		}
 	}

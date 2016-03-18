@@ -118,8 +118,9 @@ public class RegisterScreen extends AbstractScreen{
 			@Override
 			public void tap(InputEvent event, float x, float y, int c, int b){
 				super.tap(event, x, y, c, b);
-				if(register()){
-					game.setScreen(new LoginScreen(game));
+				ServerResponse result = register();
+				if(result.getStatus() == 1){
+					game.setScreen(new LoginScreen(game, result.getMessage()));
 					dispose();
 				}
 			}
@@ -129,7 +130,7 @@ public class RegisterScreen extends AbstractScreen{
 			@Override
 			public void tap(InputEvent event, float x, float y, int c, int b){
 				super.tap(event, x, y, c, b);
-				game.setScreen(new LoginScreen(game));
+				game.setScreen(new LoginScreen(game, null));
 				dispose();
 			}
 		});
@@ -163,7 +164,7 @@ public class RegisterScreen extends AbstractScreen{
 		}
 	}
 	
-	private boolean register(){
+	private ServerResponse register(){
 		if(password.getText().equals(password2.getText()) &&
 				email.getText().contains("@") &&
 				!username.getText().contains("@")){
@@ -176,11 +177,9 @@ public class RegisterScreen extends AbstractScreen{
 				dialog.text(status.getMessage());
 				dialog.button("OK");
 				dialog.show(stage);
-				
-				return false;
 			}
 			
-			return true;
+			return status;
 		}
 		else{
 			
@@ -189,8 +188,8 @@ public class RegisterScreen extends AbstractScreen{
 			dialog.button("OK");
 			dialog.getContentTable().setHeight(300);
 			dialog.show(stage);
-			
-			return false;
+
+			return new ServerResponse(-1, "");
 		}
 	}
 }
