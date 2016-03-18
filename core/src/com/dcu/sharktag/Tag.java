@@ -274,14 +274,4 @@ public class Tag extends SimpleTag implements Comparable{
 		
 		return tmp;
 	}
-	
-	public boolean overlap(Tag other, float threshold){
-		if(other.position.dst(position) <= threshold &&
-				(other.position.add(other.size)).dst(position.add(size)) <= threshold){
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
 }

@@ -268,7 +268,9 @@ public class MainGame extends AbstractScreen{
 						game.getComm().uploadTags(tags);
 						tags.clear();
 						
-						image.dispose();
+						if(image != null){
+							image.dispose();
+						}
 						image = fetchImage();
 					}
 				}
@@ -430,7 +432,6 @@ public class MainGame extends AbstractScreen{
 	private void sortTags(){
 		// Sort the tags by area, with smallest first
 		tags.sort();
-		System.out.println(tags.toString());
 	}
 	
 	private void buildTutorial(){
